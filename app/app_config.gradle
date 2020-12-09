@@ -1,0 +1,200 @@
+ext {
+    // ----- Android params -----
+
+    // Application ID - unique identifier of the app in Google Play and on user's device
+    application_id = 'io.tokend.template'
+    // Version Name - human-readable app version
+    version_name = '1.0.0'
+    // Version Code - code number for version,
+    // must be incremented after each release
+    version_code = 1
+
+    // --------------------------
+
+    // ----- Network params -----
+
+    // API URL - TokenD instance root URL
+    api_url = 'https://api.demo.tokend.io'
+
+    // Storage URL - Root URL of file storage
+    storage_url = 'https://s3.eu-west-1.amazonaws.com/demo-identity-storage-festive-colden/'
+
+    // App host - Host of the related web-client,
+    // used to open verification and referral links in app
+    app_host = 'demo.tokend.io'
+
+    // Client URL - URL of the related web-client
+    client_url = 'https://demo.tokend.io/'
+
+    //Allow to log request and response information.
+    logs_enabled = true
+
+    // --------------------------
+
+    // ----- Appearance -----
+
+    // Primary color of the brand,
+    // can be used as a color of app toolbar
+    color_primary = '#ffffff'
+    // Primary dark color - darker version of primary color,
+    // can be used as a color of app status bar
+    color_primary_dark = '#ffffff'
+
+    // Background color - used as a background color for screens
+    color_background = '#ffffff'
+    // Cards container background color - used as a background color
+    // for elevated cards container
+    color_cards_container_background = '#ffffff'
+
+    // Accent color - color of the most valuable labels and controls
+    color_accent = '#6454ee'
+    // Accent highlight color - light, semi-white version of accent color
+    // used for highlights
+    color_accent_highlight = '#EFEFFF'
+
+    // Primary text - color of all text labels and fields
+    color_primary_text = '#212121'
+    // Secondary text - color of hints
+    color_secondary_text = '#8D8D8D'
+
+    // Primary action - custom color for action controls,
+    // same as Accent by default
+    color_primary_action = '#6052e4'
+    // Primary action disabled - color of disabled action control,
+    // usually it's just a Primary action color with some transparency
+    color_primary_action_disabled = '#d1cee6'
+
+    // Icons - color of all icons in app except menus
+    color_icons = '#757575'
+
+    // Error - color of error messages,
+    // usually a shade of red
+    color_error = '#ff1744'
+    // Ok - color of success messages,
+    // usually a shade of green
+    color_ok = '#3fa595'
+
+    // Received - color of income amounts
+    color_received = '#33A494'
+    // Sent - color of spent amounts
+    color_sent = '#c2243b'
+    //Warning - color of warning message
+    color_warning = '#EF6C00'
+
+    // Avatar background - background color of the avatar placeholder
+    // (a circle with the first email letter inside)
+    color_avatar_placeholder_background = '#DADDE9'
+
+    // ----------------------
+
+    // ----- Security -----
+
+    // Secure content - when set to "true" app content will not be
+    // shown in multitasking, also user will not be allowed to take
+    // screenshots
+    secure_content = false
+
+    // Auto logout timer in milliseconds.
+    // App will logout after being in background during this time.
+    // 0 means option is disabled
+    auto_logout = 0
+
+    // ----------------------
+
+    // --- Functionality ---
+
+    // Allow send - Controls sending functionality availability.
+    // It doesn't affect the display of payment transactions in the history.
+    allow_send = true
+    //Allow limits - Controls limits functionality availability.
+    allow_limits = true
+    // Allow trade - Controls trading functionality availability.
+    // It doesn't affect the display of offer match transactions in the history.
+    allow_trade = true
+    // Allow deposit - Controls deposit functionality availability.
+    // It doesn't affect the display of deposit transactions in the history.
+    allow_deposit = true
+    // Allow withdraw - Controls withdrawal functionality availability.
+    // It doesn't affect the display of withdrawal transactions in the history.
+    allow_withdraw = true
+    // Allow fees - Controls fees functionality availability.
+    allow_fees = true
+    // Allow explore - Controls explore tokens functionality availability.
+    allow_explore = true
+    // Allow invest - Controls investment functionality availability.
+    allow_invest = true
+    // Network specified by user - When set to 'true' user have to specify network to work with.
+    network_specified_by_user = true
+    // Allows to see an analytics for your app.
+    enable_analytics = false
+    // Allows local account usage for sign in
+    allow_local_account_sign_in = true
+    // Allows voting in polls
+    allow_polls = true
+    // Allows direct buy through atomic swaps
+    allow_direct_buy = true
+
+    // Controls balance amounts conversion
+    // into `balances_conversion_asset`
+    enable_balances_conversion = true
+
+    // Sets asset to convert balance amounts into
+    balances_conversion_asset = 'USD'
+    // ----------------------
+
+    ENABLE_ANALYTICS_FIELD_KEY = "ENABLE_ANALYTICS"
+}
+
+ext.applyAppConfig = { buildConfig ->
+    android {
+        defaultConfig {
+            applicationId "${application_id}"
+            versionName "${version_name}"
+            versionCode version_code
+        }
+    }
+
+    def b = buildConfig
+
+    b.buildConfigField 'String', 'API_URL', "\"${api_url}\""
+    b.buildConfigField 'String', 'STORAGE_URL', "\"${storage_url}\""
+    b.buildConfigField 'String', 'CLIENT_URL', "\"${client_url}\""
+    b.buildConfigField 'Boolean', 'WITH_LOGS', "${logs_enabled}"
+
+    b.buildConfigField 'Boolean', 'SECURE_CONTENT', "${secure_content}"
+    b.buildConfigField 'long', 'AUTO_LOGOUT', "${auto_logout}"
+    b.buildConfigField 'Boolean', 'IS_SEND_ALLOWED', "${allow_send}"
+    b.buildConfigField 'Boolean', 'IS_LIMITS_ALLOWED', "${allow_limits}"
+    b.buildConfigField 'Boolean', 'IS_TRADE_ALLOWED', "${allow_trade}"
+    b.buildConfigField 'Boolean', 'IS_DEPOSIT_ALLOWED', "${allow_deposit}"
+    b.buildConfigField 'Boolean', 'IS_WITHDRAW_ALLOWED', "${allow_withdraw}"
+    b.buildConfigField 'Boolean', 'IS_EXPLORE_ALLOWED', "${allow_explore}"
+    b.buildConfigField 'Boolean', 'IS_INVEST_ALLOWED', "${allow_invest}"
+    b.buildConfigField 'Boolean', 'IS_FEES_ALLOWED', "${allow_fees}"
+    b.buildConfigField 'Boolean', 'IS_DIRECT_BUY_ALLOWED', "${allow_direct_buy}"
+    b.buildConfigField 'Boolean', 'IS_NETWORK_SPECIFIED_BY_USER', "${network_specified_by_user}"
+    b.buildConfigField 'Boolean', 'ARE_POLLS_ALLOWED', "${allow_polls}"
+    b.buildConfigField 'Boolean', ENABLE_ANALYTICS_FIELD_KEY, "${enable_analytics}"
+    b.buildConfigField 'Boolean', 'ENABLE_LOCAL_ACCOUNT_SIGN_IN', "${allow_local_account_sign_in}"
+    b.buildConfigField 'Boolean', 'ENABLE_BALANCES_CONVERSION', "${enable_balances_conversion}"
+    b.buildConfigField 'String', 'BALANCES_CONVERSION_ASSET', "\"${balances_conversion_asset}\""
+
+    b.resValue "string", "app_host", "${app_host}"
+    b.resValue "color", "primary", "${color_primary}"
+    b.resValue "color", "primary_dark", "${color_primary_dark}"
+    b.resValue "color", "background", "${color_background}"
+    b.resValue "color", "cards_container_background", "${color_cards_container_background}"
+    b.resValue "color", "accent", "${color_accent}"
+    b.resValue "color", "accent_highlight", "${color_accent_highlight}"
+    b.resValue "color", "primary_text", "${color_primary_text}"
+    b.resValue "color", "secondary_text", "${color_secondary_text}"
+    b.resValue "color", "primary_action", "${color_primary_action}"
+    b.resValue "color", "primary_action_disabled", "${color_primary_action_disabled}"
+    b.resValue "color", "icons", "${color_icons}"
+    b.resValue "color", "error", "${color_error}"
+    b.resValue "color", "ok", "${color_ok}"
+    b.resValue "color", "received", "${color_received}"
+    b.resValue "color", "sent", "${color_sent}"
+    b.resValue "color", "warning", "${color_warning}"
+    b.resValue "color", "avatar_placeholder_background", "${color_avatar_placeholder_background}"
+}
