@@ -9,6 +9,7 @@ import io.reactivex.rxkotlin.toMaybe
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.CompletableSubject
+import io.tokend.template.data.storage.persistence.ObjectPersistence
 
 /**
  * Repository that holds a single [T] item.
