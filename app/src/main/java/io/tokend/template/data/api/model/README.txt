@@ -1,0 +1,1 @@
+TODO: Place in this directory generated resources for apis not included to sdk
