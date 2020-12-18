@@ -13,6 +13,7 @@ import androidx.appcompat.app.LocalizedContextWrappingDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import io.reactivex.disposables.CompositeDisposable
+import io.tokend.template.App
 import io.tokend.template.BuildConfig
 import io.tokend.template.R
 import io.tokend.template.util.navigation.ActivityRequest
@@ -132,7 +133,7 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
             .addTo(compositeDisposable)*/
     }
 
-    override fun getDelegate() = baseContextWrappingDelegate ?: LocalizedContextWrappingDelegate(super.getDelegate()).apply {
+    override fun getDelegate() = baseContextWrappingDelegate ?: LocalizedContextWrappingDelegate(super.getDelegate(), App.localeManager.getLocale()).apply {
         baseContextWrappingDelegate = this
     }
 

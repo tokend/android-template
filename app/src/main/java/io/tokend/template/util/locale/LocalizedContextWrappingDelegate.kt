@@ -13,7 +13,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import java.util.*
 
-internal class LocalizedContextWrappingDelegate(private val superDelegate: AppCompatDelegate) :
+internal class LocalizedContextWrappingDelegate(private val superDelegate: AppCompatDelegate, private val locale: Locale) :
     AppCompatDelegate() {
 
     override fun getSupportActionBar() = superDelegate.supportActionBar
@@ -55,7 +55,7 @@ internal class LocalizedContextWrappingDelegate(private val superDelegate: AppCo
         superDelegate.addContentView(v, lp)
 
     override fun attachBaseContext2(context: Context) =
-        wrap(superDelegate.attachBaseContext2(super.attachBaseContext2(context)), Locale("en")) // TODO: 17.12.2020 change for correct variant
+        wrap(superDelegate.attachBaseContext2(super.attachBaseContext2(context)), locale)
 
     override fun setTitle(title: CharSequence?) = superDelegate.setTitle(title)
 
