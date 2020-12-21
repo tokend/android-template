@@ -1,11 +1,17 @@
 package io.tokend.template
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import io.tokend.template.base.activity.BaseActivity
+import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+class MainActivity : BaseActivity() {
+
+    override fun onCreateAllowed(savedInstanceState: Bundle?) {
         setContentView(R.layout.activity_main)
+
+        test_button.setOnClickListener {
+            localeManager.setLocale(Locale("en"))
+        }
     }
 }

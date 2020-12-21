@@ -9,4 +9,6 @@
     <string name="use_biometrics">Use biometrics</string>
     <string name="use_password">Use password</string>
     <!---->
+
+    <string name="hello_world">Hello World!</string>
 </resources>

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
@@ -45,29 +44,42 @@ class Navigator private constructor() {
         }
     }
 
-    private fun performIntent(intent: Intent?, requestCode: Int? = null, bundle: Bundle? = null) {
+    private fun performIntent(
+        intent: Intent?,
+        requestCode: Int? = null,
+        activityOptionsBundle: Bundle? = null
+    ) {
         if (intent != null) {
             if (!IntentLock.checkIntent(intent, context)) return
             activity?.let {
                 if (requestCode != null) {
-                    ActivityCompat.startActivityForResult(it, intent, requestCode, bundle)
+                    ActivityCompat.startActivityForResult(
+                        it,
+                        intent,
+                        requestCode,
+                        activityOptionsBundle
+                    )
                 } else {
-                    ActivityCompat.startActivity(it, intent, bundle)
+                    ActivityCompat.startActivity(it, intent, activityOptionsBundle)
                 }
                 return
             }
 
             fragment?.let {
                 if (requestCode != null) {
-                    it.startActivityForResult(intent, requestCode, bundle)
+                    it.startActivityForResult(intent, requestCode, activityOptionsBundle)
                 } else {
-                    it.startActivity(intent, bundle)
+                    it.startActivity(intent, activityOptionsBundle)
                 }
                 return
             }
 
             context?.let {
-                ActivityCompat.startActivity(it, intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), bundle)
+                ActivityCompat.startActivity(
+                    it,
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                    activityOptionsBundle
+                )
             }
         }
     }

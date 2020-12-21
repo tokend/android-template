@@ -14,19 +14,16 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
 import com.jakewharton.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
-import io.github.inflationx.calligraphy3.CalligraphyConfig
-import io.github.inflationx.calligraphy3.CalligraphyInterceptor
-import io.github.inflationx.viewpump.ViewPump
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.BehaviorSubject
 import io.tokend.template.db.AppDatabase
+import io.tokend.template.di.*
 import io.tokend.template.features.urlconfig.data.model.UrlConfig
 import io.tokend.template.logic.BackgroundLockManager
 import io.tokend.template.logic.session.Session
 import io.tokend.template.logic.session.SessionInfoStorage
 import io.tokend.template.util.locale.AppLocaleManager
-import io.tokend.template.util.navigation.Navigator
 import okhttp3.Cache
 import org.tokend.sdk.factory.HttpClientFactory
 import java.io.IOException
@@ -63,7 +60,7 @@ class App: MultiDexApplication() {
 
     private lateinit var database: AppDatabase
 
-//    lateinit var stateComponent: AppStateComponent
+    lateinit var stateComponent: AppStateComponent
 
     private val areGooglePlayServicesAvailable: Boolean
         get() {
@@ -106,7 +103,6 @@ class App: MultiDexApplication() {
         initState()
         initPicasso()
         initRxErrorHandler()
-        initCalligraphy()
     }
 
     private fun initLocale() {
@@ -164,18 +160,6 @@ class App: MultiDexApplication() {
         }
     }
 
-    private fun initCalligraphy() {
-        /*ViewPump.init(ViewPump.builder()
-            .addInterceptor(
-                CalligraphyInterceptor(
-                    CalligraphyConfig.Builder()
-                    .setDefaultFontPath("fonts/regular.ttf")
-                    .setFontAttrId(R.attr.fontPath)
-                    .build())
-            )
-            .build())*/ //TODO: uncomment if needed
-    }
-
     // region State
     // region Preferences
     private fun getPersistencePreferences(): SharedPreferences {
@@ -202,7 +186,7 @@ class App: MultiDexApplication() {
     }
 
     private fun initState() {
-        sessionInfoStorage = SessionInfoStorage(getAppPreferences())
+//        sessionInfoStorage = SessionInfoStorage(getAppPreferences())
        /* session = Session(
             WalletInfoProviderFactory().createWalletInfoProvider(),
             AccountProviderFactory().createAccountProvider(),
@@ -215,23 +199,25 @@ class App: MultiDexApplication() {
             BuildConfig.CLIENT_URL)
 //        val urlConfigProvider = UrlConfigProviderFactory().createUrlConfigProvider(defaultUrlConfig)
 
-        /*stateComponent = DaggerAppStateComponent.builder()
+        stateComponent = DaggerAppStateComponent.builder()
             .appModule(AppModule(this))
-            .urlConfigProviderModule(UrlConfigProviderModule(urlConfigProvider))
-            .apiProviderModule(ApiProviderModule(null))
-            .persistenceModule(PersistenceModule(
-                appPreferences = getAppPreferences(),
-                persistencePreferences = getPersistencePreferences(),
-                networkPreferences = getNetworkPreferences()
-            ))
-            .sessionModule(SessionModule(session))
+//            .urlConfigProviderModule(UrlConfigProviderModule(urlConfigProvider))
+//            .apiProviderModule(ApiProviderModule(null))
+            .persistenceModule(
+                PersistenceModule(
+                    appPreferences = getAppPreferences(),
+                    persistencePreferences = getPersistencePreferences(),
+                    networkPreferences = getNetworkPreferences()
+                )
+            )
+//            .sessionModule(SessionModule(session))
             .localeManagerModule(LocaleManagerModule(localeManager))
-            .appDatabaseModule(AppDatabaseModule(database))
-            .build()*/
+//            .appDatabaseModule(AppDatabaseModule(database))
+            .build()
     }
 
     private fun clearUserData() {
-        sessionInfoStorage.clear()
+//        sessionInfoStorage.clear()
         getPersistencePreferences().edit().clear().apply()
         Thread { database.clearAllTables() }.start()
     }
@@ -241,7 +227,7 @@ class App: MultiDexApplication() {
      */
     @SuppressLint("ApplySharedPref")
     fun signOut(activity: Activity?, soft: Boolean = false) {
-        session.reset()
+//        session.reset()
 
         if (!soft) {
             clearUserData()
@@ -317,8 +303,8 @@ class App: MultiDexApplication() {
     private fun expireSessionIfNeeded() {
         val now = System.currentTimeMillis()
         val backgroundLockManager = BackgroundLockManager(getAppPreferences())
-        session.isExpired = backgroundLockManager.isBackgroundLockEnabled &&
-                logoutTime != 0L && now - lastInForeground > logoutTime
+        /*session.isExpired = backgroundLockManager.isBackgroundLockEnabled &&
+                logoutTime != 0L && now - lastInForeground > logoutTime*/
     }
     // endregion
 }

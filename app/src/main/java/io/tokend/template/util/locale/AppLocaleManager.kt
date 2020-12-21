@@ -2,9 +2,11 @@ package io.tokend.template.util.locale
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.LocalizedContextWrappingDelegate
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
+import io.tokend.template.App
 import io.tokend.template.R
 import java.util.*
 
@@ -53,11 +55,11 @@ private val preferences: SharedPreferences
     }
 
     /**
-     * @return [Context] set up to use current locale
+     * @return [LocalizedContextWrappingDelegate] set up to use current locale
      */
-    /*fun getLocalizeContext(baseContext: Context): Context {
-        return LocalizedContextWrappingDelegate.wrap(baseContext, getLocale())
-    }*/
+    internal fun getLocalizeContextWrapperDelegate(superDelegate: AppCompatDelegate): LocalizedContextWrappingDelegate {
+        return LocalizedContextWrappingDelegate(superDelegate, App.localeManager.getLocale())
+    }
 
     private fun applyLocale(locale: Locale) {
         Locale.setDefault(locale)

@@ -13,7 +13,10 @@ import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import java.util.*
 
-internal class LocalizedContextWrappingDelegate(private val superDelegate: AppCompatDelegate, private val locale: Locale) :
+internal class LocalizedContextWrappingDelegate(
+    private val superDelegate: AppCompatDelegate,
+    private val locale: Locale
+) :
     AppCompatDelegate() {
 
     override fun getSupportActionBar() = superDelegate.supportActionBar
