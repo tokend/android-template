@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Text sizes -->
+    <dimen name="text_size_default">14sp</dimen>
+    <dimen name="text_size_dialog">16sp</dimen>
+    <dimen name="text_size_hint">12sp</dimen>
+    <dimen name="text_size_heading">20sp</dimen>
+    <dimen name="text_size_heading_large">32sp</dimen>
+    <dimen name="text_size_phone_number_input">15sp</dimen>
+    <dimen name="text_size_time_picker">18sp</dimen>
+    <dimen name="text_size_picked_time">24sp</dimen>
+    <!-- General margins -->
+    <dimen name="hepta_margin">96dp</dimen>
+    <dimen name="double_margin">32dp</dimen>
+    <dimen name="standard_margin">16dp</dimen>
+    <dimen name="half_standard_margin">8dp</dimen>
+    <dimen name="quarter_standard_margin">4dp</dimen>
+
+    <!-- General paddings -->
+    <dimen name="standard_padding">24dp</dimen>
+    <dimen name="double_padding">48dp</dimen>
+    <dimen name="half_standard_padding">12dp</dimen>
+    <dimen name="edit_text_horizontal_padding">12dp</dimen>
+    <dimen name="impressive_card_elevation">6dp</dimen>
+</resources>
