@@ -3,9 +3,9 @@ package io.tokend.template.features.blobs.data.storage
 import androidx.collection.LruCache
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toSingle
-import org.tokend.rx.extensions.toSingle
-import io.tokend.template.features.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.WalletInfoProvider
+import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.blobs.model.Blob
 
 class BlobsRepository(

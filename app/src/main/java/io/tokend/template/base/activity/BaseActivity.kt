@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.LocalizedContextWrappingDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import io.reactivex.disposables.CompositeDisposable
@@ -17,9 +16,23 @@ import io.reactivex.rxkotlin.addTo
 import io.tokend.template.App
 import io.tokend.template.BuildConfig
 import io.tokend.template.R
+import io.tokend.template.features.tfa.logic.AppTfaCallback
+import io.tokend.template.features.urlconfig.providers.UrlConfigProvider
+import io.tokend.template.logic.BackgroundLockManager
+import io.tokend.template.logic.credentials.persistence.CredentialsPersistence
+import io.tokend.template.logic.credentials.persistence.WalletInfoPersistence
+import io.tokend.template.logic.providers.AccountProvider
+import io.tokend.template.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.RepositoryProvider
+import io.tokend.template.logic.providers.WalletInfoProvider
+import io.tokend.template.logic.session.Session
+import io.tokend.template.util.ConnectionStateUtil
 import io.tokend.template.util.ObservableTransformers
+import io.tokend.template.util.cipher.DataCipher
+import io.tokend.template.util.errorhandler.ErrorHandlerFactory
 import io.tokend.template.util.locale.AppLocaleManager
 import io.tokend.template.util.navigation.ActivityRequest
+import io.tokend.template.view.ToastManager
 import org.tokend.sdk.tfa.NeedTfaException
 import org.tokend.sdk.tfa.TfaCallback
 import org.tokend.sdk.tfa.TfaVerifier
@@ -28,7 +41,7 @@ import javax.inject.Named
 
 abstract class BaseActivity: AppCompatActivity(), TfaCallback {
 
-    /*@Inject
+    @Inject
     lateinit var appTfaCallback: AppTfaCallback
 
     @Inject
@@ -56,40 +69,25 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
     lateinit var errorHandlerFactory: ErrorHandlerFactory
 
     @Inject
-    lateinit var toastManager: ToastManager*/
-
-    /*@Inject
-    lateinit var assetCodeComparator: Comparator<String>*/
-
-    /*@Inject
-    lateinit var assetComparator: Comparator<Asset>
-
-    @Inject
-    lateinit var balanceComparator: Comparator<BalanceRecord>
+    lateinit var toastManager: ToastManager
 
     @Inject
     lateinit var session: Session
 
     @Inject
-    lateinit var amountFormatter: AmountFormatter*/
-
-    @Inject
     lateinit var localeManager: AppLocaleManager
 
-    /*@Inject
+    @Inject
     lateinit var backgroundLockManager: BackgroundLockManager
 
     @Inject
     lateinit var defaultDataCipher: DataCipher
 
-    @Inject
-    lateinit var postSignInManagerFactory: PostSignInManagerFactory
+    /* @Inject
+     lateinit var postSignInManagerFactory: PostSignInManagerFactory*/
 
     @Inject
     lateinit var connectionStateUtil: ConnectionStateUtil
-
-    @Inject
-    lateinit var phoneNumberFormatter: PhoneNumberFormatter*/
 
     @Inject
     @Named("app")
@@ -104,8 +102,8 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
     /**
      * Controls color scheme: default for guest, purple for non-guest (host).
      */
-//    protected open val useHostColors: Boolean
-//        get() = !session.isGuest //TODO: add session
+    protected open val useHostColors: Boolean
+        get() = !session.isGuest
 
     private var baseContextWrappingDelegate: AppCompatDelegate? = null
 
@@ -134,19 +132,13 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
             }
         }
 
-        onCreateAllowed(savedInstanceState) // test
+        if (accountProvider.getAccount() != null || allowUnauthorized) {
 
-        /* if (accountProvider.getAccount() != null || allowUnauthorized) {
-             // Change accent color for host.
-             if (useHostColors) {
-                 theme.applyStyle(R.style.OverlayHostColor, true)
-             }
-
-             onCreateAllowed(savedInstanceState)
-         } else {
-             (application as App).signOut(this, soft = true)
-             return
-         }*/
+            onCreateAllowed(savedInstanceState)
+        } else {
+            (application as App).signOut(this, soft = true)
+            return
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val enterTransition = window?.enterTransition
@@ -166,32 +158,32 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
 
     override fun onStart() {
         super.onStart()
-//        appTfaCallback.registerHandler(this)
+        appTfaCallback.registerHandler(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-//        appTfaCallback.unregisterHandler(this)
+        appTfaCallback.unregisterHandler(this)
         compositeDisposable.dispose()
     }
 
     override fun onResume() {
         super.onResume()
 
-       /* if (session.isExpired) {
+        if (session.isExpired) {
             session.reset()
 
             if (!allowUnauthorized) {
                 (application as App).signOut(this, soft = true)
             }
-        }*/
+        }
     }
 
     override fun onTfaRequired(exception: NeedTfaException,
                                verifierInterface: TfaVerifier.Interface) {
         runOnUiThread {
-            /*val email = credentialsPersistence.getSavedLogin()
-            TfaDialogFactory(this, errorHandlerFactory.getDefault(), appSharedPreferences,
+            val email = credentialsPersistence.getSavedLogin()
+            /*TfaDialogFactory(this, errorHandlerFactory.getDefault(), appSharedPreferences,
                 credentialsPersistence, toastManager)
                 .getForException(exception, verifierInterface, email)
                 ?.show()
@@ -208,9 +200,10 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
             .addTo(compositeDisposable)
     }
 
-    override fun getDelegate() = baseContextWrappingDelegate ?: LocalizedContextWrappingDelegate(super.getDelegate(), App.localeManager.getLocale()).apply {
-        baseContextWrappingDelegate = this
-    }
+    override fun getDelegate() = baseContextWrappingDelegate
+        ?: App.localeManager.getLocalizeContextWrapperDelegate(super.getDelegate()).apply {
+            baseContextWrappingDelegate = this
+        }
     // endregion
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -221,7 +214,7 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
     }
 
     protected fun finishWithError(cause: Throwable) {
-//        errorHandlerFactory.getDefault().handle(cause)
+        errorHandlerFactory.getDefault().handle(cause)
         finish()
     }
 

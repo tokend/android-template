@@ -9,7 +9,7 @@ import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
 import io.tokend.template.features.kyc.model.KycForm
 import io.tokend.template.features.kyc.model.KycRequestState
 import io.tokend.template.features.kyc.storage.exception.InvalidKycDataException
-import io.tokend.template.features.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.WalletInfoProvider
 import io.tokend.template.util.Quadruple
 import org.tokend.rx.extensions.toSingle

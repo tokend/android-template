@@ -6,7 +6,7 @@ import io.reactivex.rxkotlin.toMaybe
 import io.tokend.template.extensions.mapSuccessful
 import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
 import io.tokend.template.features.kyc.model.KycForm
-import io.tokend.template.features.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.ApiProvider
 import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.integrations.kycprovider.model.generated.resources.KycResource
 

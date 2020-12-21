@@ -8,18 +8,18 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-        /*AccountProviderModule::class,
+        AccountProviderModule::class,
         WalletInfoProviderModule::class,
         AppTfaCallbackModule::class,
         ApiProviderModule::class,
-        RepositoriesModule::class,*/
+        RepositoriesModule::class,
         PersistenceModule::class,
-        /*UrlConfigProviderModule::class,
-        UtilModule::class,*/
+        UrlConfigProviderModule::class,
+        UtilModule::class,
         AppModule::class,
-//    SessionModule::class,
+        SessionModule::class,
         LocaleManagerModule::class,
-//    AppDatabaseModule::class
+        AppDatabaseModule::class
     ]
 )
 interface AppStateComponent {

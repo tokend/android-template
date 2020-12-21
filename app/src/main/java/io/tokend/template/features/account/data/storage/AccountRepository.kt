@@ -4,7 +4,7 @@ import io.reactivex.Single
 import io.tokend.template.data.storage.persistence.ObjectPersistence
 import io.tokend.template.data.storage.repository.SingleItemRepository
 import io.tokend.template.features.account.data.model.AccountRecord
-import io.tokend.template.features.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.WalletInfoProvider
 import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.v3.accounts.params.AccountParamsV3

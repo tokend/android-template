@@ -1,4 +1,4 @@
-package io.tokend.template.features.logic.providers
+package io.tokend.template.logic.providers
 
 import org.tokend.sdk.api.TokenDApi
 import org.tokend.sdk.keyserver.KeyServer

@@ -5,7 +5,7 @@ import io.tokend.template.data.storage.repository.MultipleItemsRepository
 import io.tokend.template.data.storage.repository.RepositoryCache
 import io.tokend.template.extensions.mapSuccessful
 import io.tokend.template.features.keyvalue.model.KeyValueEntryRecord
-import io.tokend.template.features.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.ApiProvider
 import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.base.params.PagingOrder
 import org.tokend.sdk.api.base.params.PagingParamsV2

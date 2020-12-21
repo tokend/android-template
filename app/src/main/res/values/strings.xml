@@ -3,6 +3,35 @@
 
     <string name="language_code">en</string>
 
+    <!--error-->
+    <string name="error_kyc_required_to_own_asset">Only verified accounts can own this pass</string>
+
+    <string name="error_unauthorized">The session has been expired</string>
+
+    <string name="error_cannot_be_empty">Cannot be empty</string>
+    <string name="error_invalid_phone">Invalid phone</string>
+    <string name="error_invalid_email">Invalid email</string>
+    <string name="error_try_again">An error occurred. Try again later</string>
+    <string name="error_connection_try_again">Connection error. Try again later</string>
+    <string name="error_invalid_password">Invalid passcode</string>
+    <string name="error_insufficient_balance">Insufficient balance</string>
+    <string name="error_invalid_recipient">Invalid recipient</string>
+    <string name="error_cannot_send_to_yourself">Send to yourself is not allowed</string>
+    <string name="error_fingerprint_locked">Too many failed attempts. Try again later</string>
+    <string name="error_payment_amount_less_than_fee">Payment amount is less than recipient\'s fee</string>
+
+    <string name="error_tx_general">Transaction failed. Try again later</string>
+    <string name="error_tx_bad_auth">Transaction signature is invalid</string>
+    <string name="error_tx_limits">Transaction exceeds limits set to your account</string>
+    <string name="error_tx_insufficient_balance">@string/error_insufficient_balance</string>
+    <string name="error_tx_invalid_amount">Transaction amount is invalid</string>
+    <string name="error_tx_malformed">Transaction is malformed</string>
+    <string name="error_tx_account_blocked">Your account is blocked</string>
+    <string name="error_tx_invalid_fee">Transaction fee is invalid</string>
+    <string name="error_tx_not_allowed">You are not allowed to perform this action</string>
+    <string name="error_tx_cross_self">Current order crosses one of your existing orders</string>
+    <string name="error_tx_not_found">Requested entry not found</string>
+    <!---->
 
     <!--Biometric-->
     <string name="authenticate_with_biometrics">Authenticate with biometrics</string>
