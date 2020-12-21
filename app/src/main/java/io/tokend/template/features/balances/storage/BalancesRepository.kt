@@ -24,6 +24,7 @@ import org.tokend.sdk.api.v3.balances.BalancesApi
 import org.tokend.sdk.api.v3.balances.params.ConvertedBalancesParams
 import org.tokend.sdk.utils.extentions.isNotFound
 import org.tokend.wallet.*
+import org.tokend.wallet.Transaction
 import org.tokend.wallet.xdr.*
 import org.tokend.wallet.xdr.op_extensions.CreateBalanceOp
 import retrofit2.HttpException
