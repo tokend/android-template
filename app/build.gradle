@@ -94,7 +94,7 @@ android {
 ext {
     anko_version = '0.10.5'
     room_version = '2.2.5'
-    tokend_version = '3.6.2'
+    tokend_version = '3.7.0'
     tokend_rx_version = '2.4.0'
 }
 
@@ -141,5 +141,8 @@ dependencies {
     implementation 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.1.1'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.1.0'
+
+    implementation 'com.journeyapps:zxing-android-embedded:3.6.0@aar'
+    implementation 'com.google.zxing:core:3.3.0'
 
 }

@@ -20,7 +20,10 @@ import io.reactivex.subjects.BehaviorSubject
 import io.tokend.template.db.AppDatabase
 import io.tokend.template.di.*
 import io.tokend.template.features.urlconfig.data.model.UrlConfig
+import io.tokend.template.features.urlconfig.providers.UrlConfigProviderFactory
 import io.tokend.template.logic.BackgroundLockManager
+import io.tokend.template.logic.providers.AccountProviderFactory
+import io.tokend.template.logic.providers.WalletInfoProviderFactory
 import io.tokend.template.logic.session.Session
 import io.tokend.template.logic.session.SessionInfoStorage
 import io.tokend.template.util.locale.AppLocaleManager
@@ -186,23 +189,23 @@ class App: MultiDexApplication() {
     }
 
     private fun initState() {
-//        sessionInfoStorage = SessionInfoStorage(getAppPreferences())
-       /* session = Session(
+        sessionInfoStorage = SessionInfoStorage(getAppPreferences())
+        session = Session(
             WalletInfoProviderFactory().createWalletInfoProvider(),
             AccountProviderFactory().createAccountProvider(),
             sessionInfoStorage
-        )*/
+        )
 
         database = getDatabase()
 
         val defaultUrlConfig = UrlConfig(BuildConfig.API_URL, BuildConfig.STORAGE_URL,
             BuildConfig.CLIENT_URL)
-//        val urlConfigProvider = UrlConfigProviderFactory().createUrlConfigProvider(defaultUrlConfig)
+        val urlConfigProvider = UrlConfigProviderFactory().createUrlConfigProvider(defaultUrlConfig)
 
         stateComponent = DaggerAppStateComponent.builder()
             .appModule(AppModule(this))
-//            .urlConfigProviderModule(UrlConfigProviderModule(urlConfigProvider))
-//            .apiProviderModule(ApiProviderModule(null))
+            .urlConfigProviderModule(UrlConfigProviderModule(urlConfigProvider))
+            .apiProviderModule(ApiProviderModule(null))
             .persistenceModule(
                 PersistenceModule(
                     appPreferences = getAppPreferences(),
@@ -210,9 +213,9 @@ class App: MultiDexApplication() {
                     networkPreferences = getNetworkPreferences()
                 )
             )
-//            .sessionModule(SessionModule(session))
+            .sessionModule(SessionModule(session))
             .localeManagerModule(LocaleManagerModule(localeManager))
-//            .appDatabaseModule(AppDatabaseModule(database))
+            .appDatabaseModule(AppDatabaseModule(database))
             .build()
     }
 
@@ -227,7 +230,7 @@ class App: MultiDexApplication() {
      */
     @SuppressLint("ApplySharedPref")
     fun signOut(activity: Activity?, soft: Boolean = false) {
-//        session.reset()
+        session.reset()
 
         if (!soft) {
             clearUserData()
@@ -237,10 +240,10 @@ class App: MultiDexApplication() {
 
 //        Navigator.from(this).toSignIn() //TODO: implement toSignIn method in Navigator class
 
-        activity?.let {
+        /*activity?.let {
             it.setResult(Activity.RESULT_CANCELED, null)
             ActivityCompat.finishAffinity(it)
-        }
+        }*/
     }
     // endregion
 
