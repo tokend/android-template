@@ -27,6 +27,7 @@ import io.tokend.template.logic.providers.WalletInfoProviderFactory
 import io.tokend.template.logic.session.Session
 import io.tokend.template.logic.session.SessionInfoStorage
 import io.tokend.template.util.locale.AppLocaleManager
+import io.tokend.template.util.navigation.Navigator
 import okhttp3.Cache
 import org.tokend.sdk.factory.HttpClientFactory
 import java.io.IOException
@@ -238,12 +239,12 @@ class App: MultiDexApplication() {
 //            Thread { FirebaseInstanceId.getInstance().deleteInstanceId() }.start() //TODO: uncomment it if using firebase
         }
 
-//        Navigator.from(this).toSignIn() //TODO: implement toSignIn method in Navigator class
+        Navigator.from(this).toSignIn() //TODO: implement toSignIn method in Navigator class
 
-        /*activity?.let {
+        activity?.let {
             it.setResult(Activity.RESULT_CANCELED, null)
             ActivityCompat.finishAffinity(it)
-        }*/
+        }
     }
     // endregion
 

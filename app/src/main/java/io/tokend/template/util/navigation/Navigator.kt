@@ -147,4 +147,18 @@ class Navigator private constructor() {
                 *sharedViews.toTypedArray()).toBundle() ?: Bundle.EMPTY
         }
     }
+
+    fun toSignIn(finishAffinity: Boolean = false) {
+        /*Intent(context, SignInPhoneNumberInputActivity::class.java) //TODO implement SignInActivity
+            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            .also { performIntent(it) }
+        activity?.let {
+            if (finishAffinity) {
+                it.setResult(Activity.RESULT_CANCELED, null)
+                ActivityCompat.finishAffinity(it)
+            } else {
+                it.finish()
+            }
+        }*/
+    }
 }

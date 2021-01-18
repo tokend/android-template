@@ -9,6 +9,7 @@ import io.tokend.template.data.storage.repository.MemoryOnlyRepositoryCache
 import io.tokend.template.db.AppDatabase
 import io.tokend.template.features.account.data.model.AccountRecord
 import io.tokend.template.features.account.data.storage.AccountRepository
+import io.tokend.template.features.accountidentity.data.storage.AccountIdentitiesRepository
 import io.tokend.template.features.assets.storage.AssetsDbCache
 import io.tokend.template.features.blobs.data.storage.BlobsRepository
 import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
@@ -38,6 +39,10 @@ class AppRepositoryProvider(
     private val assetsCache by lazy {
         database?.let { AssetsDbCache(it.assets) }
             ?: MemoryOnlyRepositoryCache()
+    }
+
+    override val accountIdentities: AccountIdentitiesRepository by lazy {
+        AccountIdentitiesRepository(apiProvider)
     }
 
     override val accountKycForms: AccountKycFormsRepository by lazy {

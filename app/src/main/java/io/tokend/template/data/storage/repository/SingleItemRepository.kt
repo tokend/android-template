@@ -170,4 +170,9 @@ abstract class SingleItemRepository<T : Any>(
             resultSubject
         }
     }
+
+    open fun set(item: T) {
+        onNewItem(item)
+        storeItem(item)
+    }
 }
