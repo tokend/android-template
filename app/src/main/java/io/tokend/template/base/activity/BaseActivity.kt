@@ -28,7 +28,6 @@ import io.tokend.template.logic.providers.WalletInfoProvider
 import io.tokend.template.logic.session.Session
 import io.tokend.template.util.ConnectionStateUtil
 import io.tokend.template.util.ObservableTransformers
-import io.tokend.template.util.cipher.DataCipher
 import io.tokend.template.util.errorhandler.ErrorHandlerFactory
 import io.tokend.template.util.locale.AppLocaleManager
 import io.tokend.template.util.navigation.ActivityRequest
@@ -79,9 +78,6 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
 
     @Inject
     lateinit var backgroundLockManager: BackgroundLockManager
-
-    @Inject
-    lateinit var defaultDataCipher: DataCipher
 
     /* @Inject
      lateinit var postSignInManagerFactory: PostSignInManagerFactory*/

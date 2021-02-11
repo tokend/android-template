@@ -7,8 +7,6 @@ import dagger.Module
 import dagger.Provides
 import io.tokend.template.logic.BackgroundLockManager
 import io.tokend.template.util.ConnectionStateUtil
-import io.tokend.template.util.cipher.Aes256GcmDataCipher
-import io.tokend.template.util.cipher.DataCipher
 import io.tokend.template.util.errorhandler.DefaultErrorLogger
 import io.tokend.template.util.errorhandler.ErrorHandlerFactory
 import io.tokend.template.util.errorhandler.ErrorLogger
@@ -80,12 +78,6 @@ class UtilModule {
     @Singleton
     fun backgroundLockManager(@Named("app") appSharedPreferences: SharedPreferences): BackgroundLockManager {
         return BackgroundLockManager(appSharedPreferences)
-    }
-
-    @Provides
-    @Singleton
-    fun dataCipher(): DataCipher {
-        return Aes256GcmDataCipher()
     }
 
     /*@Provides
