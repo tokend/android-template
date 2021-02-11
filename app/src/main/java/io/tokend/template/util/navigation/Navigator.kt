@@ -3,6 +3,7 @@ package io.tokend.template.util.navigation
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
@@ -160,5 +161,24 @@ class Navigator private constructor() {
                 it.finish()
             }
         }*/
+    }
+
+    fun openFileSaveDestinationPicker(
+        fileName: String,
+        mimeType: String
+    ): ActivityRequest<Uri> {
+        val request = ActivityRequest { result ->
+            result?.data
+        }
+
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+            .addCategory(Intent.CATEGORY_OPENABLE)
+            .setType(mimeType)
+            .putExtra(Intent.EXTRA_TITLE, fileName)
+            .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        performIntent(intent, request.code)
+
+        return request
     }
 }
