@@ -39,7 +39,7 @@ import org.tokend.sdk.tfa.TfaVerifier
 import javax.inject.Inject
 import javax.inject.Named
 
-abstract class BaseActivity: AppCompatActivity(), TfaCallback {
+abstract class BaseActivity : AppCompatActivity(), TfaCallback {
 
     @Inject
     lateinit var appTfaCallback: AppTfaCallback
@@ -99,12 +99,6 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
      */
     protected open val allowUnauthorized = false
 
-    /**
-     * Controls color scheme: default for guest, purple for non-guest (host).
-     */
-    protected open val useHostColors: Boolean
-        get() = !session.isGuest
-
     private var baseContextWrappingDelegate: AppCompatDelegate? = null
 
     /**
@@ -115,7 +109,14 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
     protected val activityRequestsBag: MutableCollection<ActivityRequest<*>> = mutableSetOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        window.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.background)))
+        window.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(
+                    this,
+                    R.color.background
+                )
+            )
+        )
 
         super.onCreate(savedInstanceState)
 
@@ -133,7 +134,6 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
         }
 
         if (accountProvider.getAccount() != null || allowUnauthorized) {
-
             onCreateAllowed(savedInstanceState)
         } else {
             (application as App).signOut(this, soft = true)
@@ -179,8 +179,10 @@ abstract class BaseActivity: AppCompatActivity(), TfaCallback {
         }
     }
 
-    override fun onTfaRequired(exception: NeedTfaException,
-                               verifierInterface: TfaVerifier.Interface) {
+    override fun onTfaRequired(
+        exception: NeedTfaException,
+        verifierInterface: TfaVerifier.Interface
+    ) {
         runOnUiThread {
             val email = credentialsPersistence.getSavedLogin()
             /*TfaDialogFactory(this, errorHandlerFactory.getDefault(), appSharedPreferences,
