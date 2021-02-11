@@ -34,7 +34,7 @@ import java.io.IOException
 import java.net.SocketException
 import java.util.*
 
-class App: MultiDexApplication() {
+class App : MultiDexApplication() {
 
     companion object {
         private const val GO_TO_BACKGROUND_TIMEOUT = 2000
@@ -199,8 +199,10 @@ class App: MultiDexApplication() {
 
         database = getDatabase()
 
-        val defaultUrlConfig = UrlConfig(BuildConfig.API_URL, BuildConfig.STORAGE_URL,
-            BuildConfig.CLIENT_URL)
+        val defaultUrlConfig = UrlConfig(
+            BuildConfig.API_URL, BuildConfig.STORAGE_URL,
+            BuildConfig.CLIENT_URL
+        )
         val urlConfigProvider = UrlConfigProviderFactory().createUrlConfigProvider(defaultUrlConfig)
 
         stateComponent = DaggerAppStateComponent.builder()
@@ -221,7 +223,7 @@ class App: MultiDexApplication() {
     }
 
     private fun clearUserData() {
-//        sessionInfoStorage.clear()
+        sessionInfoStorage.clear()
         getPersistencePreferences().edit().clear().apply()
         Thread { database.clearAllTables() }.start()
     }
@@ -236,7 +238,8 @@ class App: MultiDexApplication() {
         if (!soft) {
             clearUserData()
             initState()
-//            Thread { FirebaseInstanceId.getInstance().deleteInstanceId() }.start() //TODO: uncomment it if using firebase
+//             Uncomment this if using Firebase messaging
+//            Thread { FirebaseInstanceId.getInstance().deleteInstanceId() }.start()
         }
 
         Navigator.from(this).toSignIn() //TODO: implement toSignIn method in Navigator class
@@ -307,8 +310,8 @@ class App: MultiDexApplication() {
     private fun expireSessionIfNeeded() {
         val now = System.currentTimeMillis()
         val backgroundLockManager = BackgroundLockManager(getAppPreferences())
-        /*session.isExpired = backgroundLockManager.isBackgroundLockEnabled &&
-                logoutTime != 0L && now - lastInForeground > logoutTime*/
+        session.isExpired = backgroundLockManager.isBackgroundLockEnabled &&
+                logoutTime != 0L && now - lastInForeground > logoutTime
     }
     // endregion
 }

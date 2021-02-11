@@ -10,7 +10,8 @@ import io.tokend.template.db.AppDatabase
 import io.tokend.template.features.account.data.model.AccountRecord
 import io.tokend.template.features.account.data.storage.AccountRepository
 import io.tokend.template.features.accountidentity.data.storage.AccountIdentitiesRepository
-import io.tokend.template.features.assets.storage.AssetsDbCache
+import io.tokend.template.features.assets.storage.AssetsRepository
+import io.tokend.template.features.balances.storage.BalancesRepository
 import io.tokend.template.features.blobs.data.storage.BlobsRepository
 import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
 import io.tokend.template.features.kyc.storage.AccountKycFormsRepository
@@ -36,10 +37,6 @@ class AppRepositoryProvider(
     private val persistencePreferences: SharedPreferences? = null,
     private val database: AppDatabase? = null
 ) : RepositoryProvider {
-    private val assetsCache by lazy {
-        database?.let { AssetsDbCache(it.assets) }
-            ?: MemoryOnlyRepositoryCache()
-    }
 
     override val accountIdentities: AccountIdentitiesRepository by lazy {
         AccountIdentitiesRepository(apiProvider)
@@ -95,4 +92,19 @@ class AppRepositoryProvider(
         ActiveKycRepository(account, blobs, keyValueEntries, persistence)
     }
 
+    override val balances: BalancesRepository by lazy {
+        BalancesRepository(
+            apiProvider,
+            walletInfoProvider,
+            urlConfigProvider,
+            mapper,
+            conversionAssetCode = null,
+            itemsCache = MemoryOnlyRepositoryCache()
+        )
+    }
+
+    override val assets: AssetsRepository by lazy {
+        AssetsRepository(null, apiProvider, urlConfigProvider,
+            mapper, MemoryOnlyRepositoryCache())
+    }
 }
