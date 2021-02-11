@@ -1,7 +1,13 @@
 package io.tokend.template.binding_adapters
 
 import android.view.View
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
+
+@BindingAdapter("isEnabled")
+fun TextView.isEnabled(isEnabled: Boolean) {
+    this.isEnabled = isEnabled
+}
 
 @BindingAdapter("isVisible")
 fun View.isVisible(visible: Boolean) {
