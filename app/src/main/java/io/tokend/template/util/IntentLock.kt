@@ -2,6 +2,7 @@ package io.tokend.template.util
 
 import android.content.Context
 import android.content.Intent
+import io.tokend.template.util.IntentLock.THRESHOLD_MS
 import java.util.*
 
 /**
@@ -25,7 +26,8 @@ object IntentLock {
      */
     fun checkIntent(intent: Intent, context: Context?): Boolean {
         context ?: return false
-        val hash = intent.resolveActivity(context.packageManager).hashCode()
+        val activity = intent.resolveActivity(context.packageManager) ?: return true
+        val hash = activity.hashCode()
         val time = Date().time
         return if (this.hash != hash || time - this.time > THRESHOLD_MS) {
             set(hash, time)
