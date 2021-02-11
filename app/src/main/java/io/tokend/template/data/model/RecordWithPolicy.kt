@@ -1,4 +1,4 @@
-package io.tokend.template.util
+package io.tokend.template.data.model
 
 interface RecordWithPolicy {
     val policy: Int
