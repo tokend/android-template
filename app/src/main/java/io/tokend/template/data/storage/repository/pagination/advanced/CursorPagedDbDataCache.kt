@@ -1,4 +1,4 @@
-package io.tokend.template.data.storage.repository.pagination
+package io.tokend.template.data.storage.repository.pagination.advanced
 
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
@@ -7,7 +7,7 @@ import org.tokend.sdk.api.base.params.PagingOrder
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-abstract class PagedDbDataCache<T : PagingRecord> : PagedDataCache<T> {
+abstract class CursorPagedDbDataCache<T : CursorPagingRecord> : CursorPagedDataCache<T> {
     protected open val executor: ExecutorService = Executors.newSingleThreadExecutor {
         Thread(it).apply { name = "PagedDbCacheThread" }
     }
@@ -23,7 +23,7 @@ abstract class PagedDbDataCache<T : PagingRecord> : PagedDataCache<T> {
                 if (lastItem == null)
                     DataPage(cursor?.toString(), pageItems, true)
                 else
-                    DataPage(lastItem.getPagingId().toString(), pageItems, isLast)
+                    DataPage(lastItem.pagingCursor.toString(), pageItems, isLast)
 
             Single.just(page)
         }

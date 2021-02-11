@@ -1,4 +1,4 @@
-package io.tokend.template.data.storage.repository.pagination
+package io.tokend.template.data.storage.repository.pagination.advanced
 
 import android.util.Log
 import io.reactivex.Completable
@@ -14,15 +14,17 @@ import org.tokend.sdk.api.base.model.DataPage
 import org.tokend.sdk.api.base.params.PagingOrder
 
 /**
- * Repository that loads and caches paged collection of [T].
+ * Repository that intelligently loads and caches paged collection of [CursorPagingRecord].
+ * It does full data caching while you "scroll" through it, so it allows offline browsing next time.
+ * On update it loads new data from the top in case if [PagingOrder.DESC] order is used.
  *
- * Caching works properly only if data is immutable!
+ * Works ONLY with cursor-based pagination and immutable data (such as histories)!
  */
-abstract class PagedDataRepository<T : PagingRecord>(
-    protected open val pagingOrder: PagingOrder,
-    open val cache: PagedDataCache<T>?
+abstract class AdvancedCursorPagedDataRepository<T : CursorPagingRecord>(
+    protected open val pagingOrder: PagingOrder = PagingOrder.DESC,
+    protected open val pageLimit: Int = DEFAULT_PAGE_LIMIT,
+    open val cache: CursorPagedDataCache<T>?,
 ) : Repository() {
-    protected open val pageLimit = DEFAULT_PAGE_LIMIT
     protected var nextCursor: Long? = null
 
     val isOnFirstPage: Boolean
@@ -89,17 +91,17 @@ abstract class PagedDataRepository<T : PagingRecord>(
      * Loads new pages to the top of collection if it's in DESC order
      */
     open fun loadNewRemoteTopPages() {
-        Log.i(LOG_TAG, "Load new remote top pages")
-        val newestItemId = mItems.firstOrNull()?.getPagingId() ?: 0L
+        val newestItemCursor = mItems.firstOrNull()?.pagingCursor ?: 0L
+        Log.i(LOG_TAG, "Load new remote top pages from $newestItemCursor")
 
-        var nextNewPagesCursor: Long? = newestItemId
+        var nextNewPagesCursor: Long? = newestItemCursor
         var noMoreNewPages = false
 
         isLoadingTopPages = true
         loadingStateManager.show("new-top-pages")
 
         val processNextPage = Completable.defer {
-            getAndCacheRemotePage(nextNewPagesCursor, PagingOrder.ASC)
+            getAndCacheRemotePage(pageLimit, nextNewPagesCursor, PagingOrder.ASC)
                 .doOnSuccess { page ->
                     onNewRemoteTopPage(page)
                     nextNewPagesCursor = page.nextCursor?.toLong()
@@ -124,7 +126,7 @@ abstract class PagedDataRepository<T : PagingRecord>(
     }
 
     protected open fun onNewRemoteTopPage(page: DataPage<T>) {
-        mItems.addAll(0, page.items.sortedByDescending(PagingRecord::getPagingId))
+        mItems.addAll(0, page.items.sortedByDescending(CursorPagingRecord::pagingCursor))
         isNeverUpdated = false
         if (page.isLast) {
             isFresh = true
@@ -143,8 +145,10 @@ abstract class PagedDataRepository<T : PagingRecord>(
         loadMore(force = false, resultSubject = null)
 
     private var loadingDisposable: Disposable? = null
-    protected open fun loadMore(force: Boolean,
-                                resultSubject: CompletableSubject?): Boolean = synchronized(this) {
+    protected open fun loadMore(
+        force: Boolean,
+        resultSubject: CompletableSubject?
+    ): Boolean = synchronized(this) {
         if ((noMoreItems || (isLoading && !isLoadingTopPages)) && !force) {
             return false
         }
@@ -163,10 +167,11 @@ abstract class PagedDataRepository<T : PagingRecord>(
                             onNewPage(cachedPage)
                         }
                         val wasOnFirstPage = isOnFirstPage
-                        getAndCacheRemotePage(nextCursor, pagingOrder)
+                        getAndCacheRemotePage(pageLimit, nextCursor, pagingOrder)
                             .doOnSuccess { page ->
                                 if ((pagingOrder == PagingOrder.ASC || wasOnFirstPage)
-                                    && page.isLast) {
+                                    && page.isLast
+                                ) {
                                     isFresh = true
                                 }
                             }
@@ -197,10 +202,12 @@ abstract class PagedDataRepository<T : PagingRecord>(
         return true
     }
 
-    protected open fun getAndCacheRemotePage(nextCursor: Long?,
-                                             requiredOrder: PagingOrder
+    protected open fun getAndCacheRemotePage(
+        limit: Int,
+        cursor: Long?,
+        requiredOrder: PagingOrder
     ): Single<DataPage<T>> {
-        return getRemotePage(nextCursor, requiredOrder)
+        return getRemotePage(limit, cursor, requiredOrder)
             .subscribeOn(Schedulers.newThread())
             .doOnSuccess(this::cachePage)
     }
@@ -209,13 +216,18 @@ abstract class PagedDataRepository<T : PagingRecord>(
         cache?.cachePage(page)
     }
 
-    abstract fun getRemotePage(nextCursor: Long?,
-                               requiredOrder: PagingOrder
+    /**
+     * @param cursor MUST be used as a page[[cursor]]
+     */
+    abstract fun getRemotePage(
+        limit: Int,
+        cursor: Long?,
+        requiredOrder: PagingOrder
     ): Single<DataPage<T>>
 
-    open fun getCachedPage(nextCursor: Long?): Single<DataPage<T>> {
-        return cache?.getPage(pageLimit, nextCursor, pagingOrder)
-            ?: Single.just(DataPage(nextCursor?.toString(), emptyList(), true))
+    open fun getCachedPage(cursor: Long?): Single<DataPage<T>> {
+        return cache?.getPage(pageLimit, cursor, pagingOrder)
+            ?: Single.just(DataPage(cursor?.toString(), emptyList(), true))
     }
 
     /**
@@ -238,7 +250,7 @@ abstract class PagedDataRepository<T : PagingRecord>(
 
     private fun logDataHash() {
         val hash = mItems
-            .map(PagingRecord::getPagingId)
+            .map(CursorPagingRecord::pagingCursor)
             .toTypedArray()
             .contentHashCode()
         Log.i(LOG_TAG, "Final data hash is $hash")

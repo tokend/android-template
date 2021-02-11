@@ -1,11 +1,11 @@
-package io.tokend.template.data.storage.repository.pagination
+package io.tokend.template.data.storage.repository.pagination.advanced
 
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toSingle
 import org.tokend.sdk.api.base.model.DataPage
 import org.tokend.sdk.api.base.params.PagingOrder
 
-class MemoryOnlyPagedDataCache<T : PagingRecord> : PagedDataCache<T> {
+class MemoryOnlyCursorCursorPagedDataCache<T : CursorPagingRecord> : CursorPagedDataCache<T> {
     private val items = mutableListOf<T>()
 
     override fun getPage(limit: Int, cursor: Long?, order: PagingOrder): Single<DataPage<T>> {
@@ -15,15 +15,15 @@ class MemoryOnlyPagedDataCache<T : PagingRecord> : PagedDataCache<T> {
             .asSequence()
             .run {
                 if (order == PagingOrder.DESC)
-                    sortedByDescending(PagingRecord::getPagingId)
+                    sortedByDescending(CursorPagingRecord::pagingCursor)
                 else
-                    sortedBy(PagingRecord::getPagingId)
+                    sortedBy(CursorPagingRecord::pagingCursor)
             }
             .run {
                 if (order == PagingOrder.DESC)
-                    filter { it.getPagingId() < actualCursor }
+                    filter { it.pagingCursor < actualCursor }
                 else
-                    filter { it.getPagingId() > actualCursor }
+                    filter { it.pagingCursor > actualCursor }
             }
             .toList()
             .run {
@@ -31,7 +31,7 @@ class MemoryOnlyPagedDataCache<T : PagingRecord> : PagedDataCache<T> {
             }
 
         return DataPage(
-            nextCursor = pageItems.lastOrNull()?.getPagingId()?.toString()
+            nextCursor = pageItems.lastOrNull()?.pagingCursor?.toString()
                 ?: cursor?.toString(),
             items = pageItems,
             isLast = pageItems.size < limit
