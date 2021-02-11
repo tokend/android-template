@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.CompletableSubject
 import io.tokend.template.data.storage.repository.Repository
@@ -56,6 +57,7 @@ abstract class SimplePagedDataRepository<T>(
 
             loadingDisposable?.dispose()
             loadingDisposable = getPage(pageLimit, nextPage, pagingOrder)
+                .subscribeOn(Schedulers.io())
                 .subscribeBy(
                     onSuccess = {
                         onNewPage(it)
