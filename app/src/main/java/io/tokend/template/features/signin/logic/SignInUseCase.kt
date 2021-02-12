@@ -71,13 +71,13 @@ class SignInUseCase(
             .ignoreElement()
     }
 
-    private fun getWalletInfo(login: String, password: CharArray): Single<WalletInfoRecord> {
+    private fun getWalletInfo(login: String, password: CharArray) = Single.defer {
         val networkRequest = keyServer
             .getWalletInfo(login, password)
             .toSingle()
             .map(::WalletInfoRecord)
 
-        return walletInfoPersistence
+        walletInfoPersistence
             ?.takeIf { !ignoreCredentialsPersistence }
             ?.loadWalletInfoMaybe(login, password)
             ?.switchIfEmpty(networkRequest)
@@ -91,8 +91,10 @@ class SignInUseCase(
     }
 
     private fun updateProviders(): Single<Boolean> {
-        Companion.updateProviders(walletInfo, accounts, login, password,
-            session, credentialsPersistence, walletInfoPersistence)
+        Companion.updateProviders(
+            walletInfo, accounts, login, password,
+            session, credentialsPersistence, walletInfoPersistence
+        )
         return Single.just(true)
     }
 
@@ -104,13 +106,15 @@ class SignInUseCase(
     }
 
     companion object {
-        fun updateProviders(walletInfo: WalletInfoRecord,
-                            accounts: List<Account>,
-                            login: String,
-                            password: CharArray,
-                            session: Session,
-                            credentialsPersistence: CredentialsPersistence?,
-                            walletInfoPersistence: WalletInfoPersistence?) {
+        fun updateProviders(
+            walletInfo: WalletInfoRecord,
+            accounts: List<Account>,
+            login: String,
+            password: CharArray,
+            session: Session,
+            credentialsPersistence: CredentialsPersistence?,
+            walletInfoPersistence: WalletInfoPersistence?
+        ) {
             session.login = login
             session.setWalletInfo(walletInfo)
             session.setAccounts(accounts)
