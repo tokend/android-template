@@ -138,7 +138,8 @@ class SubmitKycRequestUseCase(
                     try {
                         DocumentType.valueOf(key.toUpperCase(Locale.ENGLISH))
                     } catch (_: Exception) {
-                        DocumentType.ALPHA
+                        Log.i(LOG_TAG, "Cannot map key $key to DocumentType, use GENERAL_PUBLIC")
+                        DocumentType.GENERAL_PUBLIC
                     }
 
                 uploadFile(documentType, file).map { key to it }
@@ -177,8 +178,10 @@ class SubmitKycRequestUseCase(
                         length = local.size,
                         inputStreamProvider = {
                             contentResolver.openInputStream(local.uri)
-                                ?: throw IllegalStateException("Unable to open a stream for file " +
-                                        local.name)
+                                ?: throw IllegalStateException(
+                                    "Unable to open a stream for file " +
+                                            local.name
+                                )
                         }
                     )
                     .toSingle()
@@ -234,22 +237,23 @@ class SubmitKycRequestUseCase(
 
     private fun getSubmittedRequestAttributes(): Single<SubmittedRequestAttributes> {
         return {
-            val request = (TransactionMeta.fromBase64(transactionResultXdr) as TransactionMeta.EmptyVersion)
-                .operations
-                .first()
-                .changes
-                .filter {
-                    it is LedgerEntryChange.Created || it is LedgerEntryChange.Updated
-                }
-                .map {
-                    if (it is LedgerEntryChange.Created)
-                        it.created.data
-                    else
-                        (it as LedgerEntryChange.Updated).updated.data
-                }
-                .filterIsInstance(LedgerEntry.LedgerEntryData.ReviewableRequest::class.java)
-                .first()
-                .reviewableRequest
+            val request =
+                (TransactionMeta.fromBase64(transactionResultXdr) as TransactionMeta.EmptyVersion)
+                    .operations
+                    .first()
+                    .changes
+                    .filter {
+                        it is LedgerEntryChange.Created || it is LedgerEntryChange.Updated
+                    }
+                    .map {
+                        if (it is LedgerEntryChange.Created)
+                            it.created.data
+                        else
+                            (it as LedgerEntryChange.Updated).updated.data
+                    }
+                    .filterIsInstance(LedgerEntry.LedgerEntryData.ReviewableRequest::class.java)
+                    .first()
+                    .reviewableRequest
 
             SubmittedRequestAttributes(
                 id = request.requestID,

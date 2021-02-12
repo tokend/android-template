@@ -58,11 +58,14 @@ data class LocalFile(
             if (queryCursor?.moveToFirst() == true) {
                 // Content URI
                 size = queryCursor.getLong(queryCursor.getColumnIndex(OpenableColumns.SIZE))
-                name = queryCursor.getString(queryCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                name =
+                    queryCursor.getString(queryCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
             } else {
                 // File URI
-                val file = File(uri.path
-                    ?: throw IllegalArgumentException("Not a file URI, missing path"))
+                val file = File(
+                    uri.path
+                        ?: throw IllegalArgumentException("Not a file URI, missing path")
+                )
                 size = file.length()
                 name = file.name
             }
