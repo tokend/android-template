@@ -84,7 +84,7 @@ android {
 
 ext {
     room_version = '2.2.6'
-    tokend_version = '3.7.0'
+    tokend_version = '3.7.1'
     tokend_rx_version = '2.4.0'
 }
 

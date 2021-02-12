@@ -19,7 +19,7 @@ class BalanceRecord(
     val conversionPrice: BigDecimal?
     /* Do not forget about contentEquals */
 ) : Serializable {
-    constructor(source: BalanceResource, urlConfig: UrlConfig?, mapper: ObjectMapper) : this(
+    constructor(source: BalanceResource, urlConfig: UrlConfig, mapper: ObjectMapper) : this(
         id = source.id,
         available = source.state.available,
         asset = AssetRecord.fromResource(source.asset, urlConfig, mapper),
@@ -30,7 +30,7 @@ class BalanceRecord(
 
     constructor(
         source: ConvertedBalanceStateResource,
-        urlConfig: UrlConfig?,
+        urlConfig: UrlConfig,
         mapper: ObjectMapper,
         conversionAsset: Asset?
     ) : this(

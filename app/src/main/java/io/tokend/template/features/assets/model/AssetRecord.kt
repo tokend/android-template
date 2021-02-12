@@ -86,7 +86,7 @@ class AssetRecord(
         @JvmStatic
         fun fromResource(
             source: AssetResource,
-            urlConfig: UrlConfig?,
+            urlConfig: UrlConfig,
             mapper: ObjectMapper
         ): AssetRecord {
 
@@ -119,7 +119,7 @@ class AssetRecord(
                 policy = source.policies.value
                     ?: throw IllegalStateException("Asset must have a policy"),
                 name = name,
-                logoUrl = logo?.getUrl(urlConfig?.storage),
+                logoUrl = logo?.getUrl(urlConfig.storage),
                 terms = terms,
                 externalSystemType = externalSystemType,
                 issued = source.issued,
