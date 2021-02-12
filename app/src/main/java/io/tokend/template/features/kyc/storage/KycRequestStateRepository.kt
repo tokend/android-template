@@ -97,6 +97,7 @@ class KycRequestStateRepository(
             .getChangeRoleRequests(
                 ChangeRoleRequestPageParams(
                     requestor = accountId,
+                    destinationAccount = accountId,
                     includes = listOf(RequestParamsV3.Includes.REQUEST_DETAILS),
                     pagingParams = PagingParamsV2(
                         order = PagingOrder.DESC,
