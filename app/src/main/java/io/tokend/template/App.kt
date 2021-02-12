@@ -170,10 +170,6 @@ class App : MultiDexApplication() {
         return getSharedPreferences("persistence", Context.MODE_PRIVATE)
     }
 
-    private fun getNetworkPreferences(): SharedPreferences {
-        return getSharedPreferences("NetworkPersistence", Context.MODE_PRIVATE)
-    }
-
     private fun getAppPreferences(): SharedPreferences {
         return getSharedPreferences("app", Context.MODE_PRIVATE)
     }
@@ -213,7 +209,6 @@ class App : MultiDexApplication() {
                 PersistenceModule(
                     appPreferences = getAppPreferences(),
                     persistencePreferences = getPersistencePreferences(),
-                    networkPreferences = getNetworkPreferences()
                 )
             )
             .sessionModule(SessionModule(session))

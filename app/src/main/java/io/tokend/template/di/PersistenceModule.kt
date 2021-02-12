@@ -14,7 +14,6 @@ import javax.inject.Singleton
 class PersistenceModule(
     private val appPreferences: SharedPreferences,
     private val persistencePreferences: SharedPreferences,
-    private val networkPreferences: SharedPreferences
 ) {
     @Provides
     @Singleton
