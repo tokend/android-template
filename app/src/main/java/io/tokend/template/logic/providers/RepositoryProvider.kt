@@ -12,6 +12,10 @@ import io.tokend.template.features.kyc.storage.KycRequestStateRepository
 import io.tokend.template.features.systeminfo.data.storage.SystemInfoRepository
 import io.tokend.template.features.tfa.repository.TfaFactorsRepository
 
+/**
+ * Provides SINGLETON instances of repositories
+ * If you need parametrized repo use fun ...() getter and LruCache
+ */
 interface RepositoryProvider {
     val accountKycForms: AccountKycFormsRepository
     val accountIdentities: AccountIdentitiesRepository
