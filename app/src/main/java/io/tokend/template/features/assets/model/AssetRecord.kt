@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.NullNode
 import io.tokend.template.data.model.RecordWithDescription
 import io.tokend.template.data.model.RecordWithLogo
+import io.tokend.template.data.model.RecordWithPolicy
 import io.tokend.template.extensions.equalsArithmetically
 import io.tokend.template.features.urlconfig.data.model.UrlConfig
-import io.tokend.template.data.model.RecordWithPolicy
 import org.tokend.sdk.api.base.model.RemoteFile
 import org.tokend.sdk.api.generated.resources.AssetResource
 import org.tokend.sdk.api.v3.assets.model.AssetState
@@ -84,7 +84,11 @@ class AssetRecord(
 
     companion object {
         @JvmStatic
-        fun fromResource(source: AssetResource, urlConfig: UrlConfig?, mapper: ObjectMapper): AssetRecord {
+        fun fromResource(
+            source: AssetResource,
+            urlConfig: UrlConfig?,
+            mapper: ObjectMapper
+        ): AssetRecord {
 
             val name = source.details.get("name")?.takeIf { it !is NullNode }?.asText()
 

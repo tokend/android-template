@@ -24,8 +24,10 @@ class TfaConfirmationDialogFactory(
         }
     }
 
-    override fun onConfirmationRequested(payload: TfaFactorCreationResult,
-                                         confirmationCallback: (Boolean) -> Unit) {
+    override fun onConfirmationRequested(
+        payload: TfaFactorCreationResult,
+        confirmationCallback: (Boolean) -> Unit
+    ) {
         getConfirmationDialog(payload)
             ?.show(confirmationCallback)
             ?: confirmationCallback(false)

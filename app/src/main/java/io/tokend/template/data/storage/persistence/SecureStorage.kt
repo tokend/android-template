@@ -150,12 +150,14 @@ class SecureStorage(
             val keyGenerator = KeyGenerator.getInstance(SECRET_KEY_ALG, KEYSTORE_NAME)
             keyGenerator.init(
                 KeyGenParameterSpec.Builder(
-                "${SECRET_KEY_NAME_PREFIX}_$name",
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
-                .setUserAuthenticationRequired(false)
-                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
-                .build())
+                    "${SECRET_KEY_NAME_PREFIX}_$name",
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+                )
+                    .setBlockModes(KeyProperties.BLOCK_MODE_CBC)
+                    .setUserAuthenticationRequired(false)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_PKCS7)
+                    .build()
+            )
             keyGenerator.generateKey()
         } catch (e: Exception) {
             e.printStackTrace()

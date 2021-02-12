@@ -7,8 +7,10 @@ package io.tokend.template.view.util
  * Loading indicator will be shown if at least one loading request is present
  * and will be hidden if all loading requests has been cancelled.
  */
-class LoadingIndicatorManager(private val showLoading: () -> Unit,
-                              private val hideLoading: () -> Unit) {
+class LoadingIndicatorManager(
+    private val showLoading: () -> Unit,
+    private val hideLoading: () -> Unit
+) {
     private val requests = mutableSetOf<String>()
 
     var isLoading: Boolean = false

@@ -2,6 +2,7 @@ package io.tokend.template.data.storage.persistence
 
 import android.content.SharedPreferences
 import com.google.gson.Gson
+import io.tokend.template.data.storage.persistence.ObjectPersistenceOnPrefs.Companion.forType
 import org.tokend.sdk.factory.GsonFactory
 
 /**
@@ -58,8 +59,10 @@ open class ObjectPersistenceOnPrefs<T : Any>(
         }
 
     companion object {
-        inline fun <reified T : Any> forType(preferences: SharedPreferences,
-                                             key: String) =
+        inline fun <reified T : Any> forType(
+            preferences: SharedPreferences,
+            key: String
+        ) =
             ObjectPersistenceOnPrefs(T::class.java, preferences, key)
     }
 }

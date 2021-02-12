@@ -11,9 +11,11 @@ interface WalletInfoPersistence {
      * @param walletInfo [WalletInfoRecord] with filled [WalletInfoRecord.seeds] field.
      * @param password password for encryption
      */
-    fun saveWalletInfo(walletInfo: WalletInfoRecord,
-                       login: String,
-                       password: CharArray)
+    fun saveWalletInfo(
+        walletInfo: WalletInfoRecord,
+        login: String,
+        password: CharArray
+    )
 
     /**
      * @return saved data, null if there is no saved data for [login]
@@ -24,9 +26,10 @@ interface WalletInfoPersistence {
     /**
      * @see loadWalletInfo
      */
-    fun loadWalletInfoMaybe(login: String, password: CharArray): Maybe<WalletInfoRecord> = Maybe.defer {
-        loadWalletInfo(login, password).toMaybe()
-    }
+    fun loadWalletInfoMaybe(login: String, password: CharArray): Maybe<WalletInfoRecord> =
+        Maybe.defer {
+            loadWalletInfo(login, password).toMaybe()
+        }
 
     /**
      * Clears stored data

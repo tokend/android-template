@@ -84,7 +84,8 @@ abstract class SimplePagedDataRepository<T>(
         noMoreItems = page.isLast || page.items.isEmpty()
 
         if (pagingOrder == PagingOrder.DESC && isOnFirstPage
-            || pagingOrder == PagingOrder.ASC && noMoreItems) {
+            || pagingOrder == PagingOrder.ASC && noMoreItems
+        ) {
             isFresh = true
         }
 

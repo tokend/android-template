@@ -9,10 +9,11 @@ import org.tokend.sdk.tfa.TfaVerifier
 /**
  * TFA verification dialog requesting code from SMS.
  */
-class TfaPhoneDialog(context: Context,
-                     errorHandler: ErrorHandler,
-                     tfaVerifierInterface: TfaVerifier.Interface)
-    : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
+class TfaPhoneDialog(
+    context: Context,
+    errorHandler: ErrorHandler,
+    tfaVerifierInterface: TfaVerifier.Interface
+) : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
 
     override fun beforeDialogShow() {
         super.beforeDialogShow()

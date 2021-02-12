@@ -36,9 +36,11 @@ class FindOutAccountTypeUseCase(
         val walletExists: Boolean
     )
 
-    class AccountHasUnknownType(phoneNumber: String,
-                                accountId: String,
-                                roleId: Long) :
+    class AccountHasUnknownType(
+        phoneNumber: String,
+        accountId: String,
+        roleId: Long
+    ) :
         IllegalStateException("Account $accountId of $phoneNumber has unknown type (role) $roleId")
 
     class AccountDoesNotExistException(phoneNumber: String) :
@@ -104,15 +106,19 @@ class FindOutAccountTypeUseCase(
 
     private fun getActualRoles(): Single<Pair<Long, Long>> {
         return repositoryProvider.keyValueEntries
-            .ensureEntries(setOf(
-                AccountType.User.ROLE_KEY,
-                ACCOUNT_ROLE_UNVERIFIED_KEY
-            ))
+            .ensureEntries(
+                setOf(
+                    AccountType.User.ROLE_KEY,
+                    ACCOUNT_ROLE_UNVERIFIED_KEY
+                )
+            )
             .map { keyValues ->
-                val general = (keyValues.getValue(AccountType.User.ROLE_KEY) as KeyValueEntryRecord.Number)
-                    .value
-                val unverified = (keyValues.getValue(ACCOUNT_ROLE_UNVERIFIED_KEY) as KeyValueEntryRecord.Number)
-                    .value
+                val general =
+                    (keyValues.getValue(AccountType.User.ROLE_KEY) as KeyValueEntryRecord.Number)
+                        .value
+                val unverified =
+                    (keyValues.getValue(ACCOUNT_ROLE_UNVERIFIED_KEY) as KeyValueEntryRecord.Number)
+                        .value
 
                 Pair(general, unverified)
             }
@@ -133,7 +139,8 @@ class FindOutAccountTypeUseCase(
             .onErrorResumeNext { error ->
                 if (error is InvalidCredentialsException
                     // Workaround for mobile ISP ads redirect on HTTP errors...
-                    || error is HttpException && !error.isServerError())
+                    || error is HttpException && !error.isServerError()
+                )
                     Single.just(false)
                 else
                     Single.error(error)

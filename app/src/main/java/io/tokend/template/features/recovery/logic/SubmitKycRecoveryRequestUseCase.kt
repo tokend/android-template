@@ -3,7 +3,6 @@ package io.tokend.template.features.recovery.logic
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toSingle
-import org.tokend.rx.extensions.toSingle
 import io.tokend.template.features.account.data.model.AccountRecord
 import io.tokend.template.features.account.data.storage.AccountRepository
 import io.tokend.template.features.kyc.model.KycForm
@@ -13,6 +12,7 @@ import io.tokend.template.logic.providers.AccountProvider
 import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.RepositoryProvider
 import io.tokend.template.logic.providers.WalletInfoProvider
+import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.base.params.PagingOrder
 import org.tokend.sdk.api.base.params.PagingParamsV2
 import org.tokend.sdk.api.blobs.model.Blob
@@ -70,7 +70,7 @@ class SubmitKycRecoveryRequestUseCase(
             .flatMap {
                 getSignersToSet()
             }
-            .doOnSuccess {signersToSet ->
+            .doOnSuccess { signersToSet ->
                 this.signersToSet = signersToSet
             }
             .flatMap {
@@ -116,9 +116,12 @@ class SubmitKycRecoveryRequestUseCase(
     private fun getRequestId(): Single<Long> {
         val recoveryStatus = accountRepository.item?.kycRecoveryStatus
 
-        if (setOf(AccountRecord.KycRecoveryStatus.INITIATED,
+        if (setOf(
+                AccountRecord.KycRecoveryStatus.INITIATED,
                 AccountRecord.KycRecoveryStatus.PERMANENTLY_REJECTED,
-                AccountRecord.KycRecoveryStatus.NONE).contains(recoveryStatus)) {
+                AccountRecord.KycRecoveryStatus.NONE
+            ).contains(recoveryStatus)
+        ) {
             return 0L.toSingle()
         }
 
@@ -131,13 +134,13 @@ class SubmitKycRecoveryRequestUseCase(
         return signedApi.v3.requests
             .get(
                 RequestsPageParamsV3(
-                requestor = accountId,
-                type = ReviewableRequestType.KYC_RECOVERY,
-                pagingParams = PagingParamsV2(
-                    order = PagingOrder.DESC,
-                    limit = 1
+                    requestor = accountId,
+                    type = ReviewableRequestType.KYC_RECOVERY,
+                    pagingParams = PagingParamsV2(
+                        order = PagingOrder.DESC,
+                        limit = 1
+                    )
                 )
-            )
             )
             .toSingle()
             .map { page ->
@@ -180,8 +183,10 @@ class SubmitKycRecoveryRequestUseCase(
             ext = CreateKYCRecoveryRequestOp.CreateKYCRecoveryRequestOpExt.EmptyVersion()
         )
 
-        return TxManager.createSignedTransaction(networkParams, accountId, account,
-            Operation.OperationBody.CreateKycRecoveryRequest(operation))
+        return TxManager.createSignedTransaction(
+            networkParams, accountId, account,
+            Operation.OperationBody.CreateKycRecoveryRequest(operation)
+        )
     }
 
     private fun getNewKycRecoveryStatus(): Single<AccountRecord.KycRecoveryStatus> {

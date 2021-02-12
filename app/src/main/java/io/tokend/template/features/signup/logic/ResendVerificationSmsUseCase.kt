@@ -9,7 +9,7 @@ import org.tokend.sdk.api.TokenDApi
  *
  * @param walletId id of the related wallet
  */
-class ResendVerificationSmsUseCase (
+class ResendVerificationSmsUseCase(
     private val walletId: String,
     private val api: TokenDApi
 ) {

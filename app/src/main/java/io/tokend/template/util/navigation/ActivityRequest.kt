@@ -3,6 +3,7 @@ package io.tokend.template.util.navigation
 import android.app.Activity
 import android.content.Intent
 import androidx.fragment.app.Fragment
+import io.tokend.template.util.navigation.ActivityRequest.Companion
 import java.util.*
 
 /**

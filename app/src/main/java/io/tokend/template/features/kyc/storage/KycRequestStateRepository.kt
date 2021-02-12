@@ -67,7 +67,12 @@ class KycRequestStateRepository(
             .map<KycRequestState> { (state, rejectReason, kycForm, roleToSet) ->
                 when (state) {
                     RequestState.REJECTED ->
-                        KycRequestState.Submitted.Rejected(kycForm, requestId, roleToSet, rejectReason)
+                        KycRequestState.Submitted.Rejected(
+                            kycForm,
+                            requestId,
+                            roleToSet,
+                            rejectReason
+                        )
                     RequestState.APPROVED ->
                         KycRequestState.Submitted.Approved(kycForm, requestId, roleToSet)
                     else ->
@@ -82,8 +87,10 @@ class KycRequestStateRepository(
             }
     }
 
-    private fun getLastKycRequest(signedApi: TokenDApi,
-                                  accountId: String): Maybe<ReviewableRequestResource> {
+    private fun getLastKycRequest(
+        signedApi: TokenDApi,
+        accountId: String
+    ): Maybe<ReviewableRequestResource> {
         return signedApi
             .v3
             .requests
@@ -111,7 +118,8 @@ class KycRequestStateRepository(
                 .get("blob_id")
                 ?.asText()
             val rejectReason = request.rejectReason ?: ""
-            val roleToSet = request.getTypedRequestDetails<ChangeRoleRequestResource>().accountRoleToSet
+            val roleToSet =
+                request.getTypedRequestDetails<ChangeRoleRequestResource>().accountRoleToSet
 
             KycRequestAttributes(state, rejectReason, blobId, roleToSet)
         } catch (e: Exception) {
@@ -120,8 +128,10 @@ class KycRequestStateRepository(
         }
     }
 
-    private fun loadKycFormFromBlob(blobId: String?,
-                                    roleId: Long): Single<KycForm> {
+    private fun loadKycFormFromBlob(
+        blobId: String?,
+        roleId: Long
+    ): Single<KycForm> {
         if (blobId == null) {
             return Single.just(KycForm.Empty)
         }

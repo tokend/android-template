@@ -31,6 +31,8 @@ abstract class AbstractConfirmationProvider<T> : ConfirmationProvider<T> {
      * Called to handle confirmation request in the main thread.
      * @param confirmationCallback must be called with confirmation result
      */
-    protected abstract fun onConfirmationRequested(payload: T,
-                                                   confirmationCallback: (Boolean) -> Unit)
+    protected abstract fun onConfirmationRequested(
+        payload: T,
+        confirmationCallback: (Boolean) -> Unit
+    )
 }

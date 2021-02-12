@@ -9,10 +9,11 @@ import org.tokend.sdk.tfa.TfaVerifier
 /**
  * TFA dialog without specific code format.
  */
-class TfaDefaultDialog(context: Context,
-                       errorHandler: ErrorHandler,
-                       tfaVerifierInterface: TfaVerifier.Interface)
-    : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
+class TfaDefaultDialog(
+    context: Context,
+    errorHandler: ErrorHandler,
+    tfaVerifierInterface: TfaVerifier.Interface
+) : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
 
     override fun beforeDialogShow() {
         super.beforeDialogShow()

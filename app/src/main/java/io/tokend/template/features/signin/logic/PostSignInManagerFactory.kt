@@ -19,8 +19,10 @@ class PostSignInManagerFactory(
     private val errorLogger: ErrorLogger
 ) {
     fun get(knownAccountType: AccountType? = null): PostSignInManager {
-        return PostSignInManager(apiProvider, accountProvider,
+        return PostSignInManager(
+            apiProvider, accountProvider,
             walletInfoProvider, repositoryProvider, session, errorLogger,
-            connectionStateUtil::isOnline, knownAccountType)
+            connectionStateUtil::isOnline, knownAccountType
+        )
     }
 }

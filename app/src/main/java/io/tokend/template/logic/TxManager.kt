@@ -18,8 +18,10 @@ class TxManager(
     private val apiProvider: ApiProvider,
     private val confirmationProvider: ConfirmationProvider<Transaction>? = null
 ) {
-    fun submit(transaction: Transaction,
-               waitForIngest: Boolean = true): Single<SubmitTransactionResponse> {
+    fun submit(
+        transaction: Transaction,
+        waitForIngest: Boolean = true
+    ): Single<SubmitTransactionResponse> {
         val confirmationCompletable =
             confirmationProvider?.requestConfirmation(transaction)
                 ?: Completable.complete()
@@ -28,14 +30,18 @@ class TxManager(
             .andThen(submitEnvelope(transaction.getEnvelope(), waitForIngest))
     }
 
-    fun submitWithoutConfirmation(transactionEnvelope: TransactionEnvelope,
-                                  waitForIngest: Boolean = true)
+    fun submitWithoutConfirmation(
+        transactionEnvelope: TransactionEnvelope,
+        waitForIngest: Boolean = true
+    )
             : Single<SubmitTransactionResponse> {
         return submitEnvelope(transactionEnvelope, waitForIngest)
     }
 
-    private fun submitEnvelope(envelope: TransactionEnvelope,
-                               waitForIngest: Boolean): Single<SubmitTransactionResponse> {
+    private fun submitEnvelope(
+        envelope: TransactionEnvelope,
+        waitForIngest: Boolean
+    ): Single<SubmitTransactionResponse> {
         return apiProvider.getApi()
             .v3
             .transactions
@@ -47,15 +53,18 @@ class TxManager(
         /**
          * @return transaction with given [operations] for [sourceAccountId] signed by [signer]
          */
-        fun createSignedTransaction(networkParams: NetworkParams,
-                                    sourceAccountId: String,
-                                    signer: Account,
-                                    vararg operations: Operation.OperationBody
+        fun createSignedTransaction(
+            networkParams: NetworkParams,
+            sourceAccountId: String,
+            signer: Account,
+            vararg operations: Operation.OperationBody
         ): Single<Transaction> {
             return Single.defer {
                 val transaction =
-                    TransactionBuilder(networkParams,
-                        PublicKeyFactory.fromAccountId(sourceAccountId))
+                    TransactionBuilder(
+                        networkParams,
+                        PublicKeyFactory.fromAccountId(sourceAccountId)
+                    )
                         .addOperations(operations.toList())
                         .addSigner(signer)
                         .build()

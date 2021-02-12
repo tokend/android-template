@@ -9,10 +9,11 @@ import io.tokend.template.logic.providers.WalletInfoProvider
 import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.v3.accounts.params.AccountParamsV3
 
-class AccountRepository(private val apiProvider: ApiProvider,
-                        private val walletInfoProvider: WalletInfoProvider,
-                        itemPersistence: ObjectPersistence<AccountRecord>?)
-    : SingleItemRepository<AccountRecord>(itemPersistence) {
+class AccountRepository(
+    private val apiProvider: ApiProvider,
+    private val walletInfoProvider: WalletInfoProvider,
+    itemPersistence: ObjectPersistence<AccountRecord>?
+) : SingleItemRepository<AccountRecord>(itemPersistence) {
 
     override fun getItem(): Single<AccountRecord> {
         val accountId = walletInfoProvider.getWalletInfo()?.accountId

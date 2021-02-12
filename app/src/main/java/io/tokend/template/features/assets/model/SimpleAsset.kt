@@ -18,7 +18,7 @@ class SimpleAsset(
         logoUrl = null
     )
 
-    constructor(source: Asset): this(
+    constructor(source: Asset) : this(
         code = source.code,
         trailingDigits = source.trailingDigits,
         name = source.name,

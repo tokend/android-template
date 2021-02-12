@@ -25,27 +25,34 @@ class BiometricAuthManager {
     private var errorCallback: ((CharSequence?) -> Unit)? = null
     private var userCancelCallback: (() -> Unit)? = null
 
-    constructor(activity: FragmentActivity,
-                appSharedPreferences: SharedPreferences,
-                credentialsProvider: CredentialsProvider) {
+    constructor(
+        activity: FragmentActivity,
+        appSharedPreferences: SharedPreferences,
+        credentialsProvider: CredentialsProvider
+    ) {
         this.context = activity
         this.appSharedPreferences = appSharedPreferences
         this.credentialsProvider = credentialsProvider
         this.biometricManager = BiometricManager.from(context)
-        this.biometricPrompt = BiometricPrompt(activity, ContextCompat.getMainExecutor(context),
-            getAuthCallback(credentialsProvider))
+        this.biometricPrompt = BiometricPrompt(
+            activity, ContextCompat.getMainExecutor(context),
+            getAuthCallback(credentialsProvider)
+        )
     }
 
-    constructor(fragment: Fragment,
-                appSharedPreferences: SharedPreferences,
-                credentialsProvider: CredentialsProvider
+    constructor(
+        fragment: Fragment,
+        appSharedPreferences: SharedPreferences,
+        credentialsProvider: CredentialsProvider
     ) {
         this.context = fragment.requireContext()
         this.appSharedPreferences = appSharedPreferences
         this.credentialsProvider = credentialsProvider
         this.biometricManager = BiometricManager.from(context)
-        this.biometricPrompt = BiometricPrompt(fragment, ContextCompat.getMainExecutor(context),
-            getAuthCallback(credentialsProvider))
+        this.biometricPrompt = BiometricPrompt(
+            fragment, ContextCompat.getMainExecutor(context),
+            getAuthCallback(credentialsProvider)
+        )
     }
 
     var isAuthEnabled: Boolean
@@ -72,10 +79,12 @@ class BiometricAuthManager {
      * @param onUserCancel will be called when auth is canceled by user, not by [cancelAuth]
      * @param onError will be called on auth error, receives system error message
      */
-    fun requestAuthIfPossible(onSuccess: (String, CharArray) -> Unit,
-                              onUserCancel: () -> Unit = {},
-                              onError: (CharSequence?) -> Unit = {},
-                              onStart: () -> Unit = {}) {
+    fun requestAuthIfPossible(
+        onSuccess: (String, CharArray) -> Unit,
+        onUserCancel: () -> Unit = {},
+        onError: (CharSequence?) -> Unit = {},
+        onStart: () -> Unit = {}
+    ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
         }
@@ -111,10 +120,15 @@ class BiometricAuthManager {
                 successCallback?.invoke(email, password)
             }
 
-            override fun onAuthenticationError(errorCode: Int,
-                                               errString: CharSequence) {
-                if (errorCode in setOf(BiometricPrompt.ERROR_USER_CANCELED,
-                        BiometricPrompt.ERROR_NEGATIVE_BUTTON)) {
+            override fun onAuthenticationError(
+                errorCode: Int,
+                errString: CharSequence
+            ) {
+                if (errorCode in setOf(
+                        BiometricPrompt.ERROR_USER_CANCELED,
+                        BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                    )
+                ) {
                     userCancelCallback?.invoke()
                 } else {
                     errorCallback?.invoke(errString)

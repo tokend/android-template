@@ -104,7 +104,9 @@ class AppRepositoryProvider(
     }
 
     override val assets: AssetsRepository by lazy {
-        AssetsRepository(null, apiProvider, urlConfigProvider,
-            mapper, MemoryOnlyRepositoryCache())
+        AssetsRepository(
+            null, apiProvider, urlConfigProvider,
+            mapper, MemoryOnlyRepositoryCache()
+        )
     }
 }

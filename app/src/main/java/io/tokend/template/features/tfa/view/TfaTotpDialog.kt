@@ -8,10 +8,11 @@ import org.tokend.sdk.tfa.TfaVerifier
 /**
  * TFA verification dialog requesting code from the TOTP authenticator app.
  */
-class TfaTotpDialog(context: Context,
-                    errorHandler: ErrorHandler,
-                    tfaVerifierInterface: TfaVerifier.Interface)
-    : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
+class TfaTotpDialog(
+    context: Context,
+    errorHandler: ErrorHandler,
+    tfaVerifierInterface: TfaVerifier.Interface
+) : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
 
     override fun getMessage(): String {
         return context.getString(R.string.totp_dialog_message)

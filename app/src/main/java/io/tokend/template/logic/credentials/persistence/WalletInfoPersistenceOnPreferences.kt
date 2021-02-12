@@ -17,9 +17,11 @@ class WalletInfoPersistenceOnPreferences(
 ) : WalletInfoPersistence {
     private val secureStorage = SecureStorage(preferences)
 
-    override fun saveWalletInfo(walletInfo: WalletInfoRecord,
-                                login: String,
-                                password: CharArray) {
+    override fun saveWalletInfo(
+        walletInfo: WalletInfoRecord,
+        login: String,
+        password: CharArray
+    ) {
         val safeWalletInfoBytes = GsonFactory().getBaseGson().toJson(walletInfo.withoutSeeds())
             .toByteArray(Charsets.UTF_8)
         val seedsBytes = serializeSeeds(walletInfo.seeds)

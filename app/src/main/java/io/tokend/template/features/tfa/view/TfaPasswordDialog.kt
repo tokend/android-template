@@ -13,13 +13,14 @@ import org.tokend.sdk.tfa.TfaVerifier
  * TFA verification dialog requesting user's password and
  * forming OTP from it.
  */
-class TfaPasswordDialog(context: Context,
-                        errorHandler: ErrorHandler,
-                        tfaVerifierInterface: TfaVerifier.Interface,
-                        private val tfaException: NeedTfaException,
-                        private val email: String,
-                        private val toastManager: ToastManager?)
-    : TfaDialog(context, errorHandler, tfaVerifierInterface) {
+class TfaPasswordDialog(
+    context: Context,
+    errorHandler: ErrorHandler,
+    tfaVerifierInterface: TfaVerifier.Interface,
+    private val tfaException: NeedTfaException,
+    private val email: String,
+    private val toastManager: ToastManager?
+) : TfaDialog(context, errorHandler, tfaVerifierInterface) {
     override fun beforeDialogShow() {
         super.beforeDialogShow()
 

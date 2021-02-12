@@ -60,7 +60,11 @@ abstract class CursorPagedDbDataCache<T : CursorPagingRecord> : CursorPagedDataC
         }
     }
 
-    protected abstract fun getPageItemsFromDb(limit: Int, cursor: Long?, order: PagingOrder): List<T>
+    protected abstract fun getPageItemsFromDb(
+        limit: Int,
+        cursor: Long?,
+        order: PagingOrder
+    ): List<T>
 
     protected abstract fun cachePageToDb(page: DataPage<T>)
 

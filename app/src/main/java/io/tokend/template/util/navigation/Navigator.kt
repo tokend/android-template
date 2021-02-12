@@ -85,11 +85,13 @@ class Navigator private constructor() {
         }
     }
 
-    private fun createAndPerformIntent(activityClass: Class<*>,
-                                       extras: Bundle? = null,
-                                       requestCode: Int? = null,
-                                       transitionBundle: Bundle? = null,
-                                       intentModifier: (Intent.() -> Intent)? = null) {
+    private fun createAndPerformIntent(
+        activityClass: Class<*>,
+        extras: Bundle? = null,
+        requestCode: Int? = null,
+        transitionBundle: Bundle? = null,
+        intentModifier: (Intent.() -> Intent)? = null
+    ) {
         var intent = context?.let { Intent(it, activityClass) }
             ?: return
 
@@ -104,23 +106,29 @@ class Navigator private constructor() {
         performIntent(intent, requestCode, transitionBundle)
     }
 
-    private fun <R : Any> createAndPerformRequest(request: ActivityRequest<R>,
-                                                  activityClass: Class<*>,
-                                                  extras: Bundle? = null,
-                                                  transitionBundle: Bundle? = null
+    private fun <R : Any> createAndPerformRequest(
+        request: ActivityRequest<R>,
+        activityClass: Class<*>,
+        extras: Bundle? = null,
+        transitionBundle: Bundle? = null
     ): ActivityRequest<R> {
         createAndPerformIntent(activityClass, extras, request.code, transitionBundle)
         return request
     }
 
-    private fun createAndPerformSimpleRequest(activityClass: Class<*>,
-                                              extras: Bundle? = null,
-                                              transitionBundle: Bundle? = null
-    ) = createAndPerformRequest(ActivityRequest.withoutResultData(),
-        activityClass, extras, transitionBundle)
+    private fun createAndPerformSimpleRequest(
+        activityClass: Class<*>,
+        extras: Bundle? = null,
+        transitionBundle: Bundle? = null
+    ) = createAndPerformRequest(
+        ActivityRequest.withoutResultData(),
+        activityClass, extras, transitionBundle
+    )
 
-    private fun fadeOut(activity: Activity,
-                        finishAffinity: Boolean) {
+    private fun fadeOut(
+        activity: Activity,
+        finishAffinity: Boolean
+    ) {
         ActivityCompat.finishAfterTransition(activity)
         activity.overridePendingTransition(0, R.anim.activity_fade_out)
         if (finishAffinity) {
@@ -131,7 +139,10 @@ class Navigator private constructor() {
         }
     }
 
-    private fun createTransitionBundle(activity: Activity, vararg pairs: Pair<View?, String>): Bundle {
+    private fun createTransitionBundle(
+        activity: Activity,
+        vararg pairs: Pair<View?, String>
+    ): Bundle {
         val sharedViews = arrayListOf<androidx.core.util.Pair<View, String>>()
 
         pairs.forEach {
@@ -144,8 +155,10 @@ class Navigator private constructor() {
         return if (sharedViews.isEmpty()) {
             Bundle.EMPTY
         } else {
-            ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                *sharedViews.toTypedArray()).toBundle() ?: Bundle.EMPTY
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                activity,
+                *sharedViews.toTypedArray()
+            ).toBundle() ?: Bundle.EMPTY
         }
     }
 

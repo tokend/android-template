@@ -2,9 +2,9 @@ package io.tokend.template.features.qr.logic
 
 import android.graphics.*
 import com.google.zxing.EncodeHintType
-import io.reactivex.Single
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
+import io.reactivex.Single
 import io.reactivex.rxkotlin.toSingle
 
 class QrGenerator {

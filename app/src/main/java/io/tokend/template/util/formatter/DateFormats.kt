@@ -11,9 +11,10 @@ object DateFormats {
     private class SimpleDateFormat(val formatter: (date: Date) -> String) : DateFormat() {
         override fun parse(source: String, pos: ParsePosition): Date? = null
 
-        override fun format(date: Date,
-                            toAppendTo: StringBuffer,
-                            fieldPosition: FieldPosition
+        override fun format(
+            date: Date,
+            toAppendTo: StringBuffer,
+            fieldPosition: FieldPosition
         ): StringBuffer = toAppendTo.append(formatter(date))
     }
 
@@ -51,7 +52,9 @@ object DateFormats {
      */
     fun compact(context: Context): DateFormat {
         return SimpleDateFormat { date ->
-            compactDateOnly(includeYear = true).format(date) + " " + longTimeOnly(context).format(date)
+            compactDateOnly(includeYear = true).format(date) + " " + longTimeOnly(context).format(
+                date
+            )
         }
     }
 

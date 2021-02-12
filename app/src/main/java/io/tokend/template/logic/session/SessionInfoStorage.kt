@@ -5,14 +5,14 @@ import android.content.SharedPreferences
 class SessionInfoStorage(
     private val sharedPreferences: SharedPreferences
 ) {
-    fun saveFirebaseToken(token: String){
+    fun saveFirebaseToken(token: String) {
         sharedPreferences
             .edit()
             .putString(FIREBASE_TOKEN_KEY, token)
             .apply()
     }
 
-    fun loadFirebaseToken(): String?{
+    fun loadFirebaseToken(): String? {
         return sharedPreferences
             .getString(FIREBASE_TOKEN_KEY, null)
     }

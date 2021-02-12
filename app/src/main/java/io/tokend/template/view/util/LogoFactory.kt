@@ -8,9 +8,7 @@ import android.graphics.Paint
 import android.util.LruCache
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.PaintCompat
-import io.tokend.template.R
 
 /**
  * Creates fancy circle logos for assets.
@@ -41,11 +39,12 @@ class LogoFactory(private val context: Context) {
 
 //    private val typeface = ResourcesCompat.getFont(context, R.font.<YOUR_FONT>) //TODO: set your font
 
-    fun getWithAutoBackground(mainValue: String,
-                              size: Int,
-                              vararg values: Any? = emptyArray(),
-                              @ColorInt
-                              fontColor: Int = ContextCompat.getColor(context, android.R.color.white)
+    fun getWithAutoBackground(
+        mainValue: String,
+        size: Int,
+        vararg values: Any? = emptyArray(),
+        @ColorInt
+        fontColor: Int = ContextCompat.getColor(context, android.R.color.white)
     ): Bitmap {
         val main = mainValue.toUpperCase()
         val string = main + values.filterNotNull().joinToString("")
@@ -60,12 +59,13 @@ class LogoFactory(private val context: Context) {
      * Returns [Bitmap] logo for given asset code by first letter.
      * If first letter cannot be displayed it will be replaced with emoji.
      */
-    fun getForValue(value: String,
-                    size: Int,
-                    @ColorInt
-                    backgroundColor: Int,
-                    @ColorInt
-                    fontColor: Int
+    fun getForValue(
+        value: String,
+        size: Int,
+        @ColorInt
+        backgroundColor: Int,
+        @ColorInt
+        fontColor: Int
     ): Bitmap {
         val letter = value
             .firstOrNull(Char::isLetter)
@@ -77,10 +77,12 @@ class LogoFactory(private val context: Context) {
             ?: generate(letter, size, backgroundColor, fontColor).also { cache.put(key, it) }
     }
 
-    private fun generate(content: String?,
-                         size: Int,
-                         backgroundColor: Int,
-                         fontColor: Int): Bitmap {
+    private fun generate(
+        content: String?,
+        size: Int,
+        backgroundColor: Int,
+        fontColor: Int
+    ): Bitmap {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
 
         val canvas = Canvas(bitmap)
@@ -109,8 +111,10 @@ class LogoFactory(private val context: Context) {
                     ?: "💰".also { paint.textSize = size * 0.45f }
             }
             .let { toDraw ->
-                canvas.drawText(toDraw, center,
-                    center - ((paint.descent() + paint.ascent()) / 2), paint)
+                canvas.drawText(
+                    toDraw, center,
+                    center - ((paint.descent() + paint.ascent()) / 2), paint
+                )
             }
 
         return bitmap

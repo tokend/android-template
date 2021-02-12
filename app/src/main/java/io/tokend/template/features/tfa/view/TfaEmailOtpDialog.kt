@@ -9,10 +9,11 @@ import org.tokend.sdk.tfa.TfaVerifier
 /**
  * TFA verification dialog requesting code from the email.
  */
-class TfaEmailOtpDialog(context: Context,
-                        errorHandler: ErrorHandler,
-                        tfaVerifierInterface: TfaVerifier.Interface)
-    : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
+class TfaEmailOtpDialog(
+    context: Context,
+    errorHandler: ErrorHandler,
+    tfaVerifierInterface: TfaVerifier.Interface
+) : TfaOtpDialog(context, errorHandler, tfaVerifierInterface) {
 
     override fun beforeDialogShow() {
         super.beforeDialogShow()

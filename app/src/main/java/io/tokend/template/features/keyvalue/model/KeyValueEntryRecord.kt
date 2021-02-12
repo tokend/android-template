@@ -16,8 +16,10 @@ sealed class KeyValueEntryRecord(val key: kotlin.String) {
                 KeyValueEntryType.STRING.value -> String(key, value.str!!)
                 KeyValueEntryType.UINT32.value -> Number(key, value.u32!!)
                 KeyValueEntryType.UINT64.value -> Number(key, value.u64!!)
-                else -> throw IllegalArgumentException("Unknown KeyValue type " +
-                        "${value.type.name} ${value.type.value}")
+                else -> throw IllegalArgumentException(
+                    "Unknown KeyValue type " +
+                            "${value.type.name} ${value.type.value}"
+                )
             }
         }
     }

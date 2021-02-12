@@ -9,10 +9,12 @@ import io.tokend.template.util.imagetransform.CircleTransform
 import java.io.File
 
 object ImageViewUtil {
-    fun loadImage(target: ImageView,
-                  url: String?,
-                  placeholder: Drawable?,
-                  picassoCustomization: RequestCreator.() -> Unit = {}) {
+    fun loadImage(
+        target: ImageView,
+        url: String?,
+        placeholder: Drawable?,
+        picassoCustomization: RequestCreator.() -> Unit = {}
+    ) {
         val picasso = Picasso.with(target.context)
 
         if (placeholder != null) {
@@ -33,9 +35,11 @@ object ImageViewUtil {
         }
     }
 
-    fun loadImageFromFile(target: ImageView,
-                          file: File?,
-                          picassoCustomization: RequestCreator.() -> Unit = {}) {
+    fun loadImageFromFile(
+        target: ImageView,
+        file: File?,
+        picassoCustomization: RequestCreator.() -> Unit = {}
+    ) {
         val picasso = Picasso.with(target.context)
 
         if (file != null) {
@@ -50,10 +54,12 @@ object ImageViewUtil {
         }
     }
 
-    fun loadImageCircle(target: ImageView,
-                        url: String?,
-                        placeholder: Drawable?,
-                        picassoCustomization: RequestCreator.() -> Unit = {}) {
+    fun loadImageCircle(
+        target: ImageView,
+        url: String?,
+        placeholder: Drawable?,
+        picassoCustomization: RequestCreator.() -> Unit = {}
+    ) {
         loadImage(target, url, placeholder) {
             apply(picassoCustomization)
             transform(CircleTransform())

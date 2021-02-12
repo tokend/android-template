@@ -1,6 +1,7 @@
 package io.tokend.template.features.signup.logic
 
 import io.reactivex.Completable
+import io.tokend.template.features.signup.logic.VerifyWalletUseCase.InvalidCodeException
 import io.tokend.template.logic.providers.ApiProvider
 import org.tokend.rx.extensions.toCompletable
 import org.tokend.sdk.utils.extentions.isBadRequest

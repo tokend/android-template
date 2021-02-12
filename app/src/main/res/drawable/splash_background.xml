@@ -5,7 +5,7 @@
             <solid android:color="@color/primary" />
         </shape>
     </item>
-<!--    <item-->
-<!--        android:drawable="@drawable/product_logo"-->
-<!--        android:gravity="center" />-->
+    <!--    <item-->
+    <!--        android:drawable="@drawable/product_logo"-->
+    <!--        android:gravity="center" />-->
 </layer-list>

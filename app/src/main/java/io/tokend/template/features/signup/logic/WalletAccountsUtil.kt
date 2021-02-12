@@ -24,8 +24,9 @@ object WalletAccountsUtil {
      * @return complete set of signers required for the account to operate.
      *
      */
-    fun getSignersForNewWallet(orderedAccountIds: List<String>,
-                               keyValueRepository: KeyValueEntriesRepository
+    fun getSignersForNewWallet(
+        orderedAccountIds: List<String>,
+        keyValueRepository: KeyValueEntriesRepository
     ): Single<Collection<SignerData>> {
         return keyValueRepository
             .ensureEntries(listOf(KeyServer.DEFAULT_SIGNER_ROLE_KEY_VALUE_KEY))

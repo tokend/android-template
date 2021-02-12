@@ -46,6 +46,7 @@ abstract class Repository {
      */
     var isFresh = false
         protected set
+
     /**
      * Indicates whether repository has no data because it was never updated.
      */

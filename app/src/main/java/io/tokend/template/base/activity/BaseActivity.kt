@@ -135,7 +135,10 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
         if (accountProvider.getAccount() != null || allowUnauthorized) {
             onCreateAllowed(savedInstanceState)
         } else {
-            Log.i("BaseActivity", "Missing account and allowUnauthorized=false. Making soft sign out")
+            Log.i(
+                "BaseActivity",
+                "Missing account and allowUnauthorized=false. Making soft sign out"
+            )
             (application as App).signOut(this, soft = true)
             return
         }

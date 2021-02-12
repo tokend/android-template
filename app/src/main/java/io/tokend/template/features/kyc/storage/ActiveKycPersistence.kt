@@ -42,10 +42,12 @@ class ActiveKycPersistence(
             if (container.isMissing)
                 ActiveKyc.Missing
             else
-                ActiveKyc.Form(gson.fromJson<KycForm>(
-                    container.serializedForm!!,
-                    Class.forName(container.formClass!!)
-                ))
+                ActiveKyc.Form(
+                    gson.fromJson<KycForm>(
+                        container.serializedForm!!,
+                        Class.forName(container.formClass!!)
+                    )
+                )
         } catch (e: Exception) {
             e.printStackTrace()
             null

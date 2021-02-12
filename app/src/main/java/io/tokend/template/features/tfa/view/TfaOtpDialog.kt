@@ -12,10 +12,11 @@ import org.tokend.sdk.tfa.TfaVerifier
 /**
  * Abstract TFA verification dialog for plain one-time password.
  */
-abstract class TfaOtpDialog(context: Context,
-                            errorHandler: ErrorHandler,
-                            tfaVerifierInterface: TfaVerifier.Interface)
-    : TfaDialog(context, errorHandler, tfaVerifierInterface) {
+abstract class TfaOtpDialog(
+    context: Context,
+    errorHandler: ErrorHandler,
+    tfaVerifierInterface: TfaVerifier.Interface
+) : TfaDialog(context, errorHandler, tfaVerifierInterface) {
 
     override fun extendDialogBuilder(builder: AlertDialog.Builder) {
         builder.setNeutralButton(R.string.paste, null)

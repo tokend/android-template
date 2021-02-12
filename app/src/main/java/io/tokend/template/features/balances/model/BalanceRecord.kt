@@ -28,10 +28,12 @@ class BalanceRecord(
         conversionPrice = null
     )
 
-    constructor(source: ConvertedBalanceStateResource,
-                urlConfig: UrlConfig?,
-                mapper: ObjectMapper,
-                conversionAsset: Asset?) : this(
+    constructor(
+        source: ConvertedBalanceStateResource,
+        urlConfig: UrlConfig?,
+        mapper: ObjectMapper,
+        conversionAsset: Asset?
+    ) : this(
         id = source.balance.id,
         available = source.initialAmounts.available,
         asset = AssetRecord.fromResource(source.balance.asset, urlConfig, mapper),

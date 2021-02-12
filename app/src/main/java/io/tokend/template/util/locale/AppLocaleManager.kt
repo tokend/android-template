@@ -11,8 +11,8 @@ import io.tokend.template.R
 import java.util.*
 
 class AppLocaleManager(
-context: Context,
-private val preferences: SharedPreferences
+    context: Context,
+    private val preferences: SharedPreferences
 ) {
     private val defaultLocale = context.resources.getString(R.string.language_code)
         .let(::Locale)

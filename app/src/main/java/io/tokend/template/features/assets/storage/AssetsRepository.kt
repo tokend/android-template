@@ -27,27 +27,27 @@ class AssetsRepository(
     override fun getItems(): Single<List<AssetRecord>> {
 
         val loader = SimplePagedResourceLoader(
-                { nextCursor ->
-                    apiProvider.getApi().v3.assets.get(
-                            AssetsPageParams(
-                                    owner = ownerId,
-                                    pagingParams = PagingParamsV2(
-                                            page = nextCursor,
-                                            limit = PAGE_LIMIT
-                                    )
-                            )
+            { nextCursor ->
+                apiProvider.getApi().v3.assets.get(
+                    AssetsPageParams(
+                        owner = ownerId,
+                        pagingParams = PagingParamsV2(
+                            page = nextCursor,
+                            limit = PAGE_LIMIT
+                        )
                     )
-                }
+                )
+            }
         )
 
         return loader
-                .loadAll()
-                .toSingle()
-                .map { assetResources ->
-                    assetResources.mapSuccessful {
-                        AssetRecord.fromResource(it, urlConfigProvider.getConfig(), mapper)
-                    }
+            .loadAll()
+            .toSingle()
+            .map { assetResources ->
+                assetResources.mapSuccessful {
+                    AssetRecord.fromResource(it, urlConfigProvider.getConfig(), mapper)
                 }
+            }
     }
 
     /**
@@ -55,22 +55,22 @@ class AssetsRepository(
      */
     fun getSingle(code: String): Single<AssetRecord> {
         return itemsCache
-                .loadFromDb()
-                .toSingle { itemsCache.items }
-                .flatMapMaybe { cachedItems ->
-                    cachedItems.find { it.code == code }.toMaybe()
-                }
-                .switchIfEmpty(
-                        apiProvider.getApi()
-                                .v3
-                                .assets
-                                .getById(code)
-                                .toSingle()
-                                .map { AssetRecord.fromResource(it, urlConfigProvider.getConfig(), mapper) }
-                                .doOnSuccess {
-                                    itemsCache.updateOrAdd(it)
-                                }
-                )
+            .loadFromDb()
+            .toSingle { itemsCache.items }
+            .flatMapMaybe { cachedItems ->
+                cachedItems.find { it.code == code }.toMaybe()
+            }
+            .switchIfEmpty(
+                apiProvider.getApi()
+                    .v3
+                    .assets
+                    .getById(code)
+                    .toSingle()
+                    .map { AssetRecord.fromResource(it, urlConfigProvider.getConfig(), mapper) }
+                    .doOnSuccess {
+                        itemsCache.updateOrAdd(it)
+                    }
+            )
     }
 
     /**
@@ -81,7 +81,7 @@ class AssetsRepository(
             Single.just(itemsMap)
         else
             updateDeferred()
-                    .toSingle { itemsMap }
+                .toSingle { itemsMap }
     }
 
     override fun broadcast() {
