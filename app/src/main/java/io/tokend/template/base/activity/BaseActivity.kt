@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +17,9 @@ import io.reactivex.rxkotlin.addTo
 import io.tokend.template.App
 import io.tokend.template.BuildConfig
 import io.tokend.template.R
+import io.tokend.template.features.signin.logic.PostSignInManagerFactory
 import io.tokend.template.features.tfa.logic.AppTfaCallback
+import io.tokend.template.features.tfa.view.TfaDialogFactory
 import io.tokend.template.features.urlconfig.providers.UrlConfigProvider
 import io.tokend.template.logic.BackgroundLockManager
 import io.tokend.template.logic.credentials.persistence.CredentialsPersistence
@@ -79,8 +82,8 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
     @Inject
     lateinit var backgroundLockManager: BackgroundLockManager
 
-    /* @Inject
-     lateinit var postSignInManagerFactory: PostSignInManagerFactory*/
+    @Inject
+    lateinit var postSignInManagerFactory: PostSignInManagerFactory
 
     @Inject
     lateinit var connectionStateUtil: ConnectionStateUtil
@@ -132,6 +135,7 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
         if (accountProvider.getAccount() != null || allowUnauthorized) {
             onCreateAllowed(savedInstanceState)
         } else {
+            Log.i("BaseActivity", "Missing account and allowUnauthorized=false. Making soft sign out")
             (application as App).signOut(this, soft = true)
             return
         }
@@ -180,12 +184,10 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
         verifierInterface: TfaVerifier.Interface
     ) {
         runOnUiThread {
-            val email = credentialsPersistence.getSavedLogin()
-            /*TfaDialogFactory(this, errorHandlerFactory.getDefault(), appSharedPreferences,
-                credentialsPersistence, toastManager)
-                .getForException(exception, verifierInterface, email)
+            TfaDialogFactory(this, errorHandlerFactory.getDefault(), toastManager)
+                .getForException(exception, verifierInterface, session.login)
                 ?.show()
-                ?: verifierInterface.cancelVerification()*/
+                ?: verifierInterface.cancelVerification()
         }
     }
 

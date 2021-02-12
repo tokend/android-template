@@ -4,6 +4,8 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.toSingle
 import io.tokend.template.features.accountidentity.data.storage.AccountIdentitiesRepository
 import io.tokend.template.features.keyvalue.model.KeyValueEntryRecord
+import io.tokend.template.features.signin.logic.FindOutAccountTypeUseCase.AccountDoesNotExistException
+import io.tokend.template.features.signin.logic.FindOutAccountTypeUseCase.AccountHasUnknownType
 import io.tokend.template.features.signin.model.AccountType
 import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.RepositoryProvider
@@ -14,6 +16,12 @@ import org.tokend.sdk.utils.extentions.isServerError
 import retrofit2.HttpException
 
 /**
+ * Used if registration in your app is limited by invitations (identity creation).
+ *
+ * Account type is not a KYC form type, it's rather an access group name.
+ * For example, if invited account is pre-registered (role:unverified) or registered(role:general)
+ * it has User type anyway, meaning that this account can use the app.
+ *
  * @see AccountDoesNotExistException
  * @see AccountHasUnknownType
  */
@@ -38,8 +46,7 @@ class FindOutAccountTypeUseCase(
 
     private lateinit var accountId: String
     private var roleId: Long = 0
-    private var guestRoleId: Long = 0
-    private var hostRoleId: Long = 0
+    private var generalRoleId: Long = 0
     private var unverifiedRoleId: Long = 0
     private var walletExists: Boolean = false
 
@@ -57,9 +64,8 @@ class FindOutAccountTypeUseCase(
             .flatMap {
                 getActualRoles()
             }
-            .doOnSuccess { (guestRoleId, hostRoleId, unverifiedRoleId) ->
-                this.guestRoleId = guestRoleId
-                this.hostRoleId = hostRoleId
+            .doOnSuccess { (generalRoleId, unverifiedRoleId) ->
+                this.generalRoleId = generalRoleId
                 this.unverifiedRoleId = unverifiedRoleId
             }
             .flatMap {
@@ -96,22 +102,19 @@ class FindOutAccountTypeUseCase(
             .map { it.role.id.toLong() }
     }
 
-    private fun getActualRoles(): Single<Triple<Long, Long, Long>> {
+    private fun getActualRoles(): Single<Pair<Long, Long>> {
         return repositoryProvider.keyValueEntries
             .ensureEntries(setOf(
-                AccountType.Guest.ROLE_KEY,
-                AccountType.Host.ROLE_KEY,
+                AccountType.User.ROLE_KEY,
                 ACCOUNT_ROLE_UNVERIFIED_KEY
             ))
             .map { keyValues ->
-                val guest = (keyValues.getValue(AccountType.Guest.ROLE_KEY) as KeyValueEntryRecord.Number)
-                    .value
-                val host = (keyValues.getValue(AccountType.Host.ROLE_KEY) as KeyValueEntryRecord.Number)
+                val general = (keyValues.getValue(AccountType.User.ROLE_KEY) as KeyValueEntryRecord.Number)
                     .value
                 val unverified = (keyValues.getValue(ACCOUNT_ROLE_UNVERIFIED_KEY) as KeyValueEntryRecord.Number)
                     .value
 
-                Triple(guest, host, unverified)
+                Pair(general, unverified)
             }
     }
 
@@ -139,12 +142,11 @@ class FindOutAccountTypeUseCase(
 
     private fun getType(): Single<AccountType> {
         return when (roleId) {
-            // Unverified accounts are guests too.
-            guestRoleId,
+            // Implement your own role -> type mapping here
+
+            generalRoleId,
             unverifiedRoleId ->
-                AccountType.Guest(guestRoleId).toSingle()
-            hostRoleId ->
-                AccountType.Host(hostRoleId).toSingle()
+                AccountType.User(generalRoleId).toSingle()
             else ->
                 Single.error(AccountHasUnknownType(phoneNumber, accountId, roleId))
         }

@@ -5,7 +5,13 @@ import android.content.SharedPreferences
 import com.fasterxml.jackson.databind.ObjectMapper
 import dagger.Module
 import dagger.Provides
+import io.tokend.template.features.signin.logic.PostSignInManagerFactory
 import io.tokend.template.logic.BackgroundLockManager
+import io.tokend.template.logic.providers.AccountProvider
+import io.tokend.template.logic.providers.ApiProvider
+import io.tokend.template.logic.providers.RepositoryProvider
+import io.tokend.template.logic.providers.WalletInfoProvider
+import io.tokend.template.logic.session.Session
 import io.tokend.template.util.ConnectionStateUtil
 import io.tokend.template.util.errorhandler.DefaultErrorLogger
 import io.tokend.template.util.errorhandler.ErrorHandlerFactory
@@ -80,19 +86,23 @@ class UtilModule {
         return BackgroundLockManager(appSharedPreferences)
     }
 
-    /*@Provides
+    @Provides
     @Singleton
-    fun postSignInManagerFactory(apiProvider: ApiProvider,
-                                 walletInfoProvider: WalletInfoProvider,
-                                 accountProvider: AccountProvider,
-                                 repositoryProvider: RepositoryProvider,
-                                 connectionStateUtil: ConnectionStateUtil,
-                                 session: Session,
-                                 errorLogger: ErrorLogger): PostSignInManagerFactory {
-        return PostSignInManagerFactory(apiProvider, accountProvider,
+    fun postSignInManagerFactory(
+        apiProvider: ApiProvider,
+        walletInfoProvider: WalletInfoProvider,
+        accountProvider: AccountProvider,
+        repositoryProvider: RepositoryProvider,
+        connectionStateUtil: ConnectionStateUtil,
+        session: Session,
+        errorLogger: ErrorLogger
+    ): PostSignInManagerFactory {
+        return PostSignInManagerFactory(
+            apiProvider, accountProvider,
             walletInfoProvider, repositoryProvider, connectionStateUtil,
-            session, errorLogger)
-    }*/
+            session, errorLogger
+        )
+    }
 
     @Provides
     @Singleton

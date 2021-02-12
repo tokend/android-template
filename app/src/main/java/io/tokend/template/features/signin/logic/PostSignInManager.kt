@@ -39,22 +39,7 @@ class PostSignInManager(
     fun doPostSignIn(): Completable {
         val parallelActions = listOf(
             // Added actions will be performed simultaneously.
-            Completable.complete()
-        )
-        val syncActions = listOf<Completable>(
-            // Added actions will be performed on after another in
-            // provided order.
-            repositoryProvider.account
-                .run {
-                    repositoryProvider.account
-                        .run {
-                            if (isOnline)
-                                updateDeferred()
-                            else
-                                ensureData()
-                        }
-                }
-                .andThen(Completable.defer { sendEmptyKycRecoveryRequestIfNeeded() }),
+
             repositoryProvider.activeKyc
                 .run {
                     if (isOnline)
@@ -65,22 +50,20 @@ class PostSignInManager(
                                 update()
                             }
                         }
+                },
+        )
+        val syncActions = listOf<Completable>(
+            // Added actions will be performed on after another in
+            // provided order.
+
+            repositoryProvider.account
+                .run {
+                    if (isOnline)
+                        updateDeferred()
+                    else
+                        ensureData()
                 }
-                .andThen(Completable.defer {
-                    val activeKycForm = repositoryProvider.activeKyc.itemFormData
-                    if (activeKycForm != null) {
-                        // If there is an active KYC then set account type by it.
-                        session.isGuest = activeKycForm !is KycForm.General
-                        Completable.complete()
-                    } else {
-                        // If there is no active KYC then find out account type
-                        // or use known.
-                        getOrLoadAccountType()
-                            .doOnSuccess { accountType ->
-                            }
-                            .ignoreElement()
-                    }
-                })
+                .andThen(Completable.defer { sendEmptyKycRecoveryRequestIfNeeded() }),
         )
 
         val performParallelActions = Completable.merge(parallelActions)
@@ -90,9 +73,9 @@ class PostSignInManager(
         repositoryProvider.systemInfo.ensureData()
             .subscribeBy(onError = { errorLogger?.log(it) })
 
-        /*SendFcmTokenUseCase(apiProvider, walletInfoProvider, session) //TODO uncomment if fcm required
-            .perform()
-            .subscribeBy(onError = { errorLogger?.log(it) })*/
+        /**
+         * Send Firebase token to start receiving notifications somewhere here
+         */
 
         return performSyncActions
             .andThen(performParallelActions)
@@ -106,7 +89,8 @@ class PostSignInManager(
 
     private fun sendEmptyKycRecoveryRequestIfNeeded(): Completable {
         if (!isOnline || repositoryProvider.account.item!!.kycRecoveryStatus
-            != AccountRecord.KycRecoveryStatus.INITIATED) {
+            != AccountRecord.KycRecoveryStatus.INITIATED
+        ) {
             return Completable.complete()
         }
 
@@ -121,6 +105,9 @@ class PostSignInManager(
             .perform()
     }
 
+    /**
+     * Include this to post sign in flow if your app requires account types.
+     */
     private fun getOrLoadAccountType(): Single<AccountType> {
         return knownAccountType
             .toMaybe()

@@ -1,9 +1,7 @@
 package io.tokend.template.extensions
 
-import android.content.ClipData
-import android.content.ClipDescription
-import android.content.ClipboardManager
-import android.content.Context
+import android.content.*
+import android.net.Uri
 import io.tokend.template.R
 
 var Context.clipboardText: CharSequence?
@@ -14,7 +12,8 @@ var Context.clipboardText: CharSequence?
                 ClipData.newPlainText(
                     getString(R.string.app_name),
                     value
-                ))
+                )
+            )
         }
     }
     get() {
@@ -31,4 +30,16 @@ var Context.clipboardText: CharSequence?
             .takeIf { it.itemCount > 0 }
             ?.getItemAt(0)
             ?.text
+    }
+
+
+fun Context.browse(uri: String): Boolean =
+    try {
+        startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+        true
+    } catch (_: ActivityNotFoundException) {
+        false
     }

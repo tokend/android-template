@@ -1,20 +1,21 @@
 package io.tokend.template.features.signin.model
 
 import io.tokend.template.features.kyc.model.KycForm
+import io.tokend.template.features.signin.logic.FindOutAccountTypeUseCase
 import java.io.Serializable
 
+/**
+ * @see FindOutAccountTypeUseCase
+ */
 sealed class AccountType(
     val roleId: Long
 ): Serializable {
-    class Guest(roleId: Long) : AccountType(roleId) {
-        companion object {
-            const val ROLE_KEY = KycForm.General.ROLE_KEY //TODO implement guest role if needed
-        }
-    }
+    // Implement your types if required.
+    // Do not forget to include role keys to FindOutAccountTypeUseCase.getActualRoles()
 
-    class Host(roleId: Long) : AccountType(roleId) {
+    class User(roleId: Long): AccountType(roleId) {
         companion object {
-            const val ROLE_KEY = KycForm.General.ROLE_KEY //TODO implement host role if needed
+            const val ROLE_KEY = KycForm.General.ROLE_KEY
         }
     }
 }

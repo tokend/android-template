@@ -20,17 +20,7 @@ class Session(
     var isExpired = false
 
     /**
-     * @returns true if user type is guest, false if host
-     */
-    var isGuest: Boolean = true
-        get() = sessionInfoStorage?.loadUserType() ?: true
-        set(value) {
-            field = value
-            sessionInfoStorage?.saveUserType(value)
-        }
-
-    /**
-     * @returns current firebase token
+     * @returns current Firebase token
      */
     var currentFirebaseToken: String = ""
         get() = sessionInfoStorage?.loadFirebaseToken() ?: ""

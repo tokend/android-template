@@ -24,27 +24,35 @@ abstract class KycForm(
 
     open fun setDocument(type: DocumentType, file: RemoteFile?) {
         if (file == null) {
-            documents?.remove(type.name.toLowerCase())
+            documents?.remove(type.name.toLowerCase(Locale.ENGLISH))
             return
         }
 
-        documents?.put(type.name.toLowerCase(), file)
+        documents?.put(type.name.toLowerCase(Locale.ENGLISH), file)
     }
 
-    open class General(
-        // TODO: Write here KYC model fields with json serialising/deserialising ability
+    /**
+     * Implement your KYC forms here according to the example below
+     */
+
+    class General(
+        @SerializedName("first_name")
+        val firstName: String,
+        @SerializedName("last_name")
+        val lastName: String,
         documents: MutableMap<String, RemoteFile>? = null
     ) : KycForm(documents) {
-
-        override fun getRoleKey(): String = ROLE_KEY
-
         val avatar: RemoteFile?
-            get() = documents?.get(AVATAR_DOCUMENT_KEY)
+            get() = documents?.get("kyc_avatar")
 
+        val fullName: String
+            get() = "$firstName $lastName"
+
+        override fun getRoleKey(): String =
+            ROLE_KEY
 
         companion object {
-            const val ROLE_KEY = "$ROLE_KEY_PREFIX:<YOUR_ROLE_KEY_HERE>>" // TODO: Replace with real role key
-            const val AVATAR_DOCUMENT_KEY = "kyc_avatar"
+            const val ROLE_KEY = "$ROLE_KEY_PREFIX:general"
         }
     }
 
@@ -59,7 +67,6 @@ abstract class KycForm(
     }
 
     companion object {
-
         private const val ROLE_KEY_PREFIX = "account_role"
 
         /**
@@ -67,9 +74,11 @@ abstract class KycForm(
          *
          * @param blob KYC form blob
          */
-        fun fromBlob(blob: Blob,
-                     roleId: Long,
-                     keyValueEntries: Collection<KeyValueEntryRecord>): KycForm {
+        fun fromBlob(
+            blob: Blob,
+            roleId: Long,
+            keyValueEntries: Collection<KeyValueEntryRecord>
+        ): KycForm {
             return fromJson(blob.valueString, roleId, keyValueEntries)
         }
 
@@ -78,9 +87,11 @@ abstract class KycForm(
          *
          * @param json KYC form JSON
          */
-        fun fromJson(json: String,
-                     roleId: Long,
-                     keyValueEntries: Collection<KeyValueEntryRecord>): KycForm {
+        fun fromJson(
+            json: String,
+            roleId: Long,
+            keyValueEntries: Collection<KeyValueEntryRecord>
+        ): KycForm {
             val gson = GsonFactory().getBaseGson()
             val roleKey = keyValueEntries
                 .find {
@@ -95,7 +106,8 @@ abstract class KycForm(
                 General.ROLE_KEY ->
                     gson.fromJson(json, General::class.java)
                 else ->
-                    throw IllegalArgumentException("Unknown KYC form type") //TODO: replace with your custom "wrong role" exception
+                    // Replace with your custom "wrong role" exception
+                    throw IllegalArgumentException("Unknown KYC form type")
             }
         }
     }
