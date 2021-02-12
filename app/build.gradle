@@ -41,15 +41,11 @@ android {
             debuggable true
         }
 
-        staging {
+        QA {
             apply from: "app_config.gradle"
-            if (file("stage_app_config.gradle").exists()) {
-                apply from: "stage_app_config.gradle"
-            }
-            applyAppConfig(android.buildTypes.staging)
-
+            applyAppConfig(android.buildTypes.QA)
             signingConfig signingConfigs.debug
-            debuggable true
+            debuggable false
         }
 
         release {
@@ -66,18 +62,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+
     dexOptions {
         javaMaxHeapSize "4g"
         jumboMode true
         preDexLibraries true
     }
+
     testOptions {
         unitTests.returnDefaultValues = true
     }
@@ -105,7 +96,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'androidx.multidex:multidex:2.0.1'

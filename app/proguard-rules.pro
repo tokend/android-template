@@ -1,21 +1,69 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# General reflection
+-keepattributes Signature, InnerClasses, EnclosingMethod
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+-dontwarn javax.annotation.**
+-keepclassmembers enum * { *; }
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Retrofit
+-dontwarn org.codehaus.**
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Jackson
+-keep class com.fasterxml.** { *; }
+-keep @com.fasterxml.jackson.annotation.** class * { *; }
+-dontwarn com.fasterxml.jackson.databind.**
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# JSONAPI
+-keepclassmembers class * { @com.github.jasminb.jsonapi.annotations.Id <fields>; }
+-keep class * implements com.github.jasminb.jsonapi.ResourceIdHandler
+
+# Wallet
+# Uncomment this if you would like to decode XDRs
+-keep class org.tokend.wallet.xdr.* { *; }
+-dontnote org.tokend.wallet.xdr.*
+
+# General
+-keepattributes SourceFile,LineNumberTable,EnclosingMethod,Exceptions
+-keep public class * extends java.lang.Exception
+
+# Optimize
+-repackageclasses
+-optimizations !method/removal/parameter
+
+# KYC state storage
+-keepnames class io.tokend.template.features.kyc.model.** { *; }
+
+# Keep JsonCreator
+-keepclassmembers class * {
+     @com.fasterxml.jackson.annotation.JsonCreator *;
+}
+
+# Legacy Picasso downloader
+-dontwarn com.squareup.picasso.OkHttpDownloader
+
+# ProGuard issue
+# https://sourceforge.net/p/proguard/bugs/573/
+-optimizations !class/unboxing/enum
+
+# These classes are used via kotlin reflection and the keep might not be required anymore once Proguard supports
+# Kotlin reflection directly.
+-keep interface kotlin.reflect.jvm.internal.impl.builtins.BuiltInsLoader
+-keep class kotlin.reflect.jvm.internal.impl.serialization.deserialization.builtins.BuiltInsLoaderImpl
+-keep class kotlin.Metadata
+
+# class [META-INF/versions/9/module-info.class] unexpectedly contains class [module-info]
+-dontwarn module-info
+
+# Serializable objects
+-keepnames class * implements java.io.Serializable
+-keepclassmembers class * implements java.io.Serializable {
+    static final long serialVersionUID;
+    private static final java.io.ObjectStreamField[] serialPersistentFields;
+    !static !transient <fields>;
+    private void writeObject(java.io.ObjectOutputStream);
+    private void readObject(java.io.ObjectInputStream);
+    java.lang.Object writeReplace();
+    java.lang.Object readResolve();
+}
