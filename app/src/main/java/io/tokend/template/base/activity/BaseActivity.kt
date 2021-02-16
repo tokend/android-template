@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.tokend.template.App
@@ -34,6 +36,7 @@ import io.tokend.template.util.ObservableTransformers
 import io.tokend.template.util.errorhandler.ErrorHandlerFactory
 import io.tokend.template.util.locale.AppLocaleManager
 import io.tokend.template.util.navigation.ActivityRequest
+import io.tokend.template.view.ProgressDialog
 import io.tokend.template.view.ToastManager
 import org.tokend.sdk.tfa.NeedTfaException
 import org.tokend.sdk.tfa.TfaCallback
@@ -107,6 +110,10 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
 
     protected val activityRequestsBag: MutableCollection<ActivityRequest<*>> = mutableSetOf()
 
+    private val progressDialog = ProgressDialog()
+
+    var isLoading = MutableLiveData<Boolean>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         window.setBackgroundDrawable(
             ColorDrawable(
@@ -131,6 +138,14 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
                 e.printStackTrace()
             }
         }
+
+        isLoading.observe(this, Observer {
+            if (it) {
+                progressDialog.show(this, "Loading...")
+            } else {
+                progressDialog.dialog?.dismiss()
+            }
+        })
 
         if (accountProvider.getAccount() != null || allowUnauthorized) {
             onCreateAllowed(savedInstanceState)

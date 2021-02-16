@@ -62,5 +62,8 @@
     <string name="password">Password</string>
     <!---->
 
+    <string name="email_verified">Email has been verified</string>
+    <string name="processing_progress">Processing…</string>\
+
     <string name="hello_world">Hello World!</string>
 </resources>

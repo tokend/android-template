@@ -20,4 +20,7 @@
     <color name="edit_text_hint">#767481</color>
     <color name="edit_text_underline">#D1D1D5</color>
     <color name="gray_stroke">#4D222222</color>
+    <color name="progress_gray">#CECEDC</color>
+    <color name="dialogBackground">#60000000</color>
+
 </resources>
