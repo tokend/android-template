@@ -18,7 +18,7 @@ import org.tokend.sdk.api.base.params.PagingOrder
  * It does full data caching while you "scroll" through it, so it allows offline browsing next time.
  * On update it loads new data from the top in case if [PagingOrder.DESC] order is used.
  *
- * Works ONLY with cursor-based pagination and immutable data (such as histories)!
+ * Works ONLY with numeric cursor-based pagination and immutable data (such as histories)!
  */
 abstract class AdvancedCursorPagedDataRepository<T : CursorPagingRecord>(
     protected open val pagingOrder: PagingOrder = PagingOrder.DESC,
