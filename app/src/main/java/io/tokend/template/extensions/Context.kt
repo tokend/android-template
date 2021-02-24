@@ -21,7 +21,12 @@ var Context.clipboardText: CharSequence?
         if (!clipboard.hasPrimaryClip()) {
             return null
         }
-        if (clipboard.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) != true) {
+        if (clipboard.primaryClipDescription
+                ?.run {
+                    hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)
+                            || hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)
+                } != true
+        ) {
             return null
         }
         val primaryClip = clipboard.primaryClip
@@ -31,7 +36,6 @@ var Context.clipboardText: CharSequence?
             ?.getItemAt(0)
             ?.text
     }
-
 
 fun Context.browse(uri: String): Boolean =
     try {
