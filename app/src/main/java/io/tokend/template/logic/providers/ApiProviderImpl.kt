@@ -13,6 +13,7 @@ import org.tokend.sdk.utils.HashCodes
 class ApiProviderImpl(
     private val urlConfigProvider: UrlConfigProvider,
     private val accountProvider: AccountProvider,
+    private val walletInfoProvider: WalletInfoProvider,
     private val tfaCallback: TfaCallback?,
     cookieJar: CookieJar?
 ) : ApiProvider {
@@ -60,6 +61,7 @@ class ApiProviderImpl(
 
     override fun getSignedApi(): TokenDApi? = synchronized(this) {
         val account = accountProvider.getAccount() ?: return null
+        val originalAccountId = walletInfoProvider.getWalletInfo()?.accountId ?: return null
         val hash = HashCodes.ofMany(account.accountId, url)
 
         val signedApi =
@@ -70,7 +72,7 @@ class ApiProviderImpl(
                 ?.second
                 ?: TokenDApi(
                     url,
-                    AccountRequestSigner(account),
+                    AccountRequestSigner(account, originalAccountId),
                     tfaCallback,
                     cookieJarProvider,
                     withLogs = withLogs

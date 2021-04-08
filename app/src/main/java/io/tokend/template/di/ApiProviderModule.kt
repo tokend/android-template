@@ -7,6 +7,7 @@ import io.tokend.template.features.urlconfig.providers.UrlConfigProvider
 import io.tokend.template.logic.providers.AccountProvider
 import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.ApiProviderFactory
+import io.tokend.template.logic.providers.WalletInfoProvider
 import okhttp3.CookieJar
 import javax.inject.Singleton
 
@@ -19,9 +20,10 @@ class ApiProviderModule(
     fun apiProvider(
         urlConfigProvider: UrlConfigProvider,
         accountProvider: AccountProvider,
+        walletInfoProvider: WalletInfoProvider,
         tfaCallback: AppTfaCallback
     ): ApiProvider {
         return ApiProviderFactory()
-            .createApiProvider(urlConfigProvider, accountProvider, tfaCallback, cookieJar)
+            .createApiProvider(urlConfigProvider, accountProvider, walletInfoProvider, tfaCallback, cookieJar)
     }
 }
