@@ -47,3 +47,5 @@ fun Context.browse(uri: String): Boolean =
     } catch (_: ActivityNotFoundException) {
         false
     }
+
+fun Context.dip(value: Int): Int = (value * resources.displayMetrics.density).toInt()
