@@ -8,6 +8,7 @@
 
     <color name="background">@color/white</color>
     <color name="dialog_background">@color/background</color>
+    <color name="progress_dialog_dim_background">#60000000</color>
     <color name="primary">@color/purple</color>
     <color name="accent">#204F49</color>
     <color name="icons">@color/grey</color>
@@ -20,7 +21,5 @@
     <color name="edit_text_hint">#767481</color>
     <color name="edit_text_underline">#D1D1D5</color>
     <color name="gray_stroke">#4D222222</color>
-    <color name="progress_gray">#CECEDC</color>
-    <color name="dialogBackground">#60000000</color>
 
 </resources>

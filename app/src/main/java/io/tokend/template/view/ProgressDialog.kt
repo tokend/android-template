@@ -8,7 +8,7 @@ import android.graphics.BlendModeColorFilter
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.os.Build
-import androidx.core.content.ContextCompat
+import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import io.tokend.template.R
 import kotlinx.android.synthetic.main.progress_dialog_view.view.*
@@ -23,22 +23,18 @@ class ProgressDialog {
     fun show(context: Context, title: CharSequence?): Dialog {
         val inflater = (context as Activity).layoutInflater
         val view = inflater.inflate(R.layout.progress_dialog_view, null)
+
         if (title != null) {
             view.cp_title.text = title
+        } else {
+            view.cp_title.visibility = View.GONE
+            view.cp_top_space.visibility = View.GONE
         }
-
-        // Card Color
-        view.cp_cardview.setCardBackgroundColor(
-            ContextCompat.getColor(
-                context,
-                R.color.progress_gray
-            )
-        )
 
         // Progress Bar Color
         setColorFilter(
             view.cp_pbar.indeterminateDrawable,
-            ResourcesCompat.getColor(context.resources, R.color.dark, null)
+            ResourcesCompat.getColor(context.resources, R.color.primary, null)
         )
 
         dialog = CustomDialog(context)
@@ -56,11 +52,9 @@ class ProgressDialog {
         }
     }
 
-
     class CustomDialog(context: Context) : Dialog(context, R.style.CustomDialogTheme) {
         init {
             // Set Semi-Transparent Color for Dialog Background
-            window?.decorView?.rootView?.setBackgroundResource(R.color.dialogBackground)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
                 window?.decorView?.setOnApplyWindowInsetsListener { _, insets ->
                     insets.consumeSystemWindowInsets()
