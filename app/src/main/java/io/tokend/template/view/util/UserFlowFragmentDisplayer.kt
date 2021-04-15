@@ -1,4 +1,4 @@
-package io.tokend.template.view.util
+package org.tokend.template.view.util
 
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
@@ -16,13 +16,17 @@ private constructor(
     @IdRes
     private val containerId: Int
 ) {
-    constructor(activity: AppCompatActivity,
-                @IdRes
-                containerId: Int) : this({ activity.supportFragmentManager }, containerId)
+    constructor(
+        activity: AppCompatActivity,
+        @IdRes
+        containerId: Int
+    ) : this({ activity.supportFragmentManager }, containerId)
 
-    constructor(fragment: Fragment,
-                @IdRes
-                containerId: Int) : this({ fragment.childFragmentManager }, containerId)
+    constructor(
+        fragment: Fragment,
+        @IdRes
+        containerId: Int
+    ) : this({ fragment.childFragmentManager }, containerId)
 
     private val fragmentManager: FragmentManager by lazy(fragmentManagerGetter)
 
@@ -33,11 +37,14 @@ private constructor(
      * @param tag unique tag for back stack
      * @param forward if set to true then "forward" transition will be used, "back" otherwise.
      * null will cause no transition at all
+     * @param hideAndAdd if set to true then transaction will just hide previous fragment and
+     * add given one instead of replace, so on back press you will have exactly the same fragment
      */
     fun display(
         fragment: Fragment,
         tag: String,
-        forward: Boolean?
+        forward: Boolean?,
+        hideAndAdd: Boolean = false
     ) {
         fragmentManager.beginTransaction()
             .setTransition(
@@ -47,22 +54,15 @@ private constructor(
                     null -> FragmentTransaction.TRANSIT_NONE
                 }
             )
-            .replace(containerId, fragment, tag)
+            .apply {
+                if (hideAndAdd) {
+                    currentFragment?.also { hide(it) }
+                    add(containerId, fragment, tag)
+                } else {
+                    replace(containerId, fragment, tag)
+                }
+            }
             .addToBackStack(tag)
-            .commit()
-
-        fragmentManager.executePendingTransactions()
-    }
-
-    /**
-     * Removes fragment with given [tag]
-     */
-    fun remove(tag: String) {
-        val fragment = fragmentManager.findFragmentByTag(tag)
-            ?: return
-
-        fragmentManager.beginTransaction()
-            .remove(fragment)
             .commit()
     }
 
