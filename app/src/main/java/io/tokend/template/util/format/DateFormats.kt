@@ -1,4 +1,4 @@
-package io.tokend.template.util.formatter
+package io.tokend.template.util.format
 
 import android.content.Context
 import java.text.DateFormat
