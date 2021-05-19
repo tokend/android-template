@@ -5,6 +5,8 @@
 # Built application files
 *.apk
 *.aab
+app/QA/
+app/release/
 
 # Files for the ART/Dalvik VM
 *.dex
