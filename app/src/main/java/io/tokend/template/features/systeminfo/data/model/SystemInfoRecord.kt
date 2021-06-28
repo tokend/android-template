@@ -1,7 +1,7 @@
 package io.tokend.template.features.systeminfo.data.model
 
 import com.google.gson.annotations.SerializedName
-import org.tokend.sdk.api.general.model.SystemInfo
+import org.tokend.sdk.api.generated.resources.HorizonStateResource
 import org.tokend.wallet.NetworkParams
 import java.util.*
 import kotlin.math.log10
@@ -17,15 +17,14 @@ class SystemInfoRecord(
     val latestBlock: Long
 ) {
     /**
-     * @param source fresh [SystemInfo], if it's outdated then
+     * @param source fresh [HorizonStateResource], if it's outdated then
      * [timeOffsetSeconds] will be wrong
      */
-    constructor(source: SystemInfo) : this(
-        passphrase = source.passphrase,
-        precisionMultiplier = source.precisionMultiplier,
-        timeOffsetSeconds = source.currentTime - Date().time / 1000,
-        latestBlock = source.ledgersState[SystemInfo.LEDGER_CORE]?.latest
-            ?: throw IllegalArgumentException("Latest core block number is required")
+    constructor(source: HorizonStateResource) : this(
+        passphrase = source.networkPassphrase,
+        precisionMultiplier = source.precision,
+        timeOffsetSeconds = (source.currentTime.time - Date().time) / 1000,
+        latestBlock = source.core.latest
     )
 
     val precision: Int
@@ -34,5 +33,4 @@ class SystemInfoRecord(
     fun toNetworkParams(): NetworkParams {
         return NetworkParams(passphrase, precision, timeOffsetSeconds.toInt())
     }
-
 }
