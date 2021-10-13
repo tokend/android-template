@@ -69,8 +69,11 @@ class BiometricAuthManager {
      */
     val isAuthPossible: Boolean
         get() = isAuthEnabled
-                && biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS
+                && isHardwareDetected
                 && credentialsProvider.hasCredentials()
+
+    val isHardwareDetected: Boolean
+        get() = biometricManager.canAuthenticate(ALLOWED_AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS
 
     /**
      * @param onStart will be called when auth is available and started
@@ -83,7 +86,7 @@ class BiometricAuthManager {
         onSuccess: (String, CharArray) -> Unit,
         onUserCancel: () -> Unit = {},
         onError: (CharSequence?) -> Unit = {},
-        onStart: () -> Unit = {}
+        onStart: () -> Unit = {},
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return
@@ -97,9 +100,9 @@ class BiometricAuthManager {
             onStart()
 
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setDeviceCredentialAllowed(false)
-                .setConfirmationRequired(true)
-                .setTitle(context.getString(R.string.authenticate_with_biometrics))
+                .setAllowedAuthenticators(ALLOWED_AUTHENTICATORS)
+                .setConfirmationRequired(false)
+                .setTitle(context.getString(R.string.use_biometrics))
                 .setNegativeButtonText(context.getString(R.string.use_password))
                 .build()
 
@@ -122,7 +125,7 @@ class BiometricAuthManager {
 
             override fun onAuthenticationError(
                 errorCode: Int,
-                errString: CharSequence
+                errString: CharSequence,
             ) {
                 if (errorCode in setOf(
                         BiometricPrompt.ERROR_USER_CANCELED,
@@ -143,5 +146,7 @@ class BiometricAuthManager {
     companion object {
         private const val PREFERENCE_KEY = "enable_biometric_auth"
         const val IS_ENABLED_BY_DEFAULT = true
+        private const val ALLOWED_AUTHENTICATORS =
+            BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.BIOMETRIC_WEAK
     }
 }
