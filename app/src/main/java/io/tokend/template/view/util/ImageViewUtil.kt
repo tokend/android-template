@@ -2,10 +2,9 @@ package io.tokend.template.view.util
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
-import com.squareup.picasso.MemoryPolicy
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.RequestCreator
-import io.tokend.template.util.imagetransform.CircleTransform
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import java.io.File
 
 object ImageViewUtil {
@@ -13,22 +12,22 @@ object ImageViewUtil {
         target: ImageView,
         url: String?,
         placeholder: Drawable?,
-        picassoCustomization: RequestCreator.() -> Unit = {}
+        glideCustomization: RequestBuilder<*>.() -> Unit = {}
     ) {
-        val picasso = Picasso.with(target.context)
+        val glide = Glide.with(target.context)
 
         if (placeholder != null) {
             target.setImageDrawable(placeholder)
         }
 
         if (!url.isNullOrEmpty()) {
-            picasso
+            glide
                 .load(url)
                 .placeholder(placeholder)
-                .apply(picassoCustomization)
+                .apply(glideCustomization)
                 .into(target)
         } else {
-            picasso.cancelRequest(target)
+            glide.clear(target)
             if (placeholder != null) {
                 target.setImageDrawable(placeholder)
             }
@@ -38,19 +37,19 @@ object ImageViewUtil {
     fun loadImageFromFile(
         target: ImageView,
         file: File?,
-        picassoCustomization: RequestCreator.() -> Unit = {}
+        glideCustomization: RequestBuilder<*>.() -> Unit = {}
     ) {
-        val picasso = Picasso.with(target.context)
+        val glide = Glide.with(target.context)
 
         if (file != null) {
-            picasso
+            glide
                 .load(file)
-                .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-
-                .apply(picassoCustomization)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .apply(glideCustomization)
                 .into(target)
         } else {
-            picasso.cancelRequest(target)
+            glide.clear(target)
         }
     }
 
@@ -58,17 +57,15 @@ object ImageViewUtil {
         target: ImageView,
         url: String?,
         placeholder: Drawable?,
-        picassoCustomization: RequestCreator.() -> Unit = {}
+        glideCustomization: RequestBuilder<*>.() -> Unit = {}
     ) {
         loadImage(target, url, placeholder) {
-            apply(picassoCustomization)
-            transform(CircleTransform())
-            fit()
-            centerCrop()
+            apply(glideCustomization)
+            circleCrop()
         }
     }
 
     fun cancelImageLoadingRequest(target: ImageView) {
-        Picasso.with(target.context).cancelRequest(target)
+        Glide.with(target.context).clear(target)
     }
 }

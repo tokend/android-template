@@ -4,16 +4,20 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.multidex.MultiDexApplication
 import androidx.room.Room
+import com.bumptech.glide.Glide
+import com.bumptech.glide.GlideBuilder
+import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
-import com.jakewharton.picasso.OkHttp3Downloader
-import com.squareup.picasso.Picasso
 import io.reactivex.exceptions.UndeliverableException
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.subjects.BehaviorSubject
@@ -28,8 +32,6 @@ import io.tokend.template.logic.session.Session
 import io.tokend.template.logic.session.SessionInfoStorage
 import io.tokend.template.util.locale.AppLocaleManager
 import io.tokend.template.util.navigation.Navigator
-import okhttp3.Cache
-import org.tokend.sdk.factory.HttpClientFactory
 import java.io.IOException
 import java.net.SocketException
 import java.util.*
@@ -105,7 +107,7 @@ class App : MultiDexApplication() {
 
         initLocale()
         initState()
-        initPicasso()
+        initGlide()
         initRxErrorHandler()
     }
 
@@ -114,24 +116,22 @@ class App : MultiDexApplication() {
         localeManager.initLocale()
     }
 
-    private fun initPicasso() {
-        val httpClient = HttpClientFactory()
-            .getBaseHttpClientBuilder()
-            .addNetworkInterceptor { chain ->
-                val response = chain.proceed(chain.request())
-                // All pictures are immutable but S3 does not send Cache-Control, so...
-                response.newBuilder()
-                    .header("Cache-Control", "immutable")
-                    .build()
-            }
-            .cache(Cache(cacheDir, IMAGE_CACHE_SIZE_MB * 1024 * 1024))
-            .build()
-
-        val picasso = Picasso.Builder(this)
-            .downloader(OkHttp3Downloader(httpClient))
-            .build()
-
-        Picasso.setSingletonInstance(picasso)
+    private fun initGlide() {
+        Glide.init(this, GlideBuilder().apply {
+            setDiskCache(
+                InternalCacheDiskCacheFactory(
+                    this@App,
+                    cacheDir.absolutePath,
+                    IMAGE_CACHE_SIZE_MB * 1024 * 1024
+                )
+            )
+            setDefaultTransitionOptions(
+                Drawable::class.java,
+                DrawableTransitionOptions.withCrossFade(
+                    DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build()
+                )
+            )
+        })
     }
 
     private fun initRxErrorHandler() {
