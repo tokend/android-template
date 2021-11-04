@@ -6,14 +6,13 @@ import io.tokend.template.logic.credentials.model.WalletInfoRecord
 
 interface WalletInfoPersistence {
     /**
-     * Saves given [walletInfo] by [login] and encrypts it with [password]
+     * Saves given [walletInfo] by [WalletInfoRecord.login] and encrypts it with [password]
      *
      * @param walletInfo [WalletInfoRecord] with filled [WalletInfoRecord.seeds] field.
      * @param password password for encryption
      */
     fun saveWalletInfo(
         walletInfo: WalletInfoRecord,
-        login: String,
         password: CharArray
     )
 

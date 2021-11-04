@@ -49,6 +49,6 @@ class AfterSignUpSignInUseCase(
 
     private fun updatePersistence() {
         credentialsPersistence.saveCredentials(login, password)
-        walletInfoPersistence.saveWalletInfo(currentWalletInfo, login, password)
+        walletInfoPersistence.saveWalletInfo(currentWalletInfo, password)
     }
 }

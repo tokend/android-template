@@ -12,7 +12,8 @@ class Session(
     private val sessionInfoStorage: SessionInfoStorage? = null
 ) : WalletInfoProvider by walletInfoProvider,
     AccountProvider by accountProvider {
-    var login: String = ""
+    val login: String
+        get() = getWalletInfo()?.login ?: ""
 
     /**
      * @returns true if session is expired and so sign out is required
@@ -35,7 +36,6 @@ class Session(
     fun reset() {
         isExpired = false
 
-        login = ""
         setWalletInfo(null)
         setAccounts(emptyList())
     }

@@ -92,8 +92,8 @@ class SignInUseCase(
 
     private fun updateProviders(): Single<Boolean> {
         Companion.updateProviders(
-            walletInfo, accounts, login, password,
-            session, credentialsPersistence, walletInfoPersistence
+            walletInfo, accounts, password, session,
+            credentialsPersistence, walletInfoPersistence
         )
         return Single.just(true)
     }
@@ -109,18 +109,16 @@ class SignInUseCase(
         fun updateProviders(
             walletInfo: WalletInfoRecord,
             accounts: List<Account>,
-            login: String,
             password: CharArray,
             session: Session,
             credentialsPersistence: CredentialsPersistence?,
             walletInfoPersistence: WalletInfoPersistence?
         ) {
-            session.login = login
             session.setWalletInfo(walletInfo)
             session.setAccounts(accounts)
 
-            credentialsPersistence?.saveCredentials(login, password)
-            walletInfoPersistence?.saveWalletInfo(walletInfo, login, password)
+            credentialsPersistence?.saveCredentials(walletInfo.login, password)
+            walletInfoPersistence?.saveWalletInfo(walletInfo, password)
         }
     }
 }
