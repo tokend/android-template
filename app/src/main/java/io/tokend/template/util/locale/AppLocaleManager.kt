@@ -22,8 +22,6 @@ class AppLocaleManager(
     /**
      * Emits new locale when it changes.
      * You must update the context when this event occurs
-     *
-     * @see getLocalizedContext
      */
     val localeChanges: Observable<Locale> = localeChangesSubject
 

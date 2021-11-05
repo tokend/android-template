@@ -51,14 +51,14 @@ class UrlConfig(
         get() = HttpUrl.parse(client)?.host() ?: client
 
     private fun String.addTrailSlashIfNeeded(): String {
-        return if (this.endsWith('/')) this else this + "/"
+        return if (this.endsWith('/')) this else "$this/"
     }
 
     private fun String.addProtocolIfNeeded(): String {
         return if (!contains("^.+//".toRegex()))
-            "https://" + this
+            "https://$this"
         else if (startsWith("//"))
-            "https:" + this
+            "https:$this"
         else
             this
     }

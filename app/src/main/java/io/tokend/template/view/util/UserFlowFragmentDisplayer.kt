@@ -1,4 +1,4 @@
-package org.tokend.template.view.util
+package io.tokend.template.view.util
 
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity

@@ -139,7 +139,7 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
             }
         }
 
-        isLoading.observe(this, Observer {
+        isLoading.observe(this, {
             if (it) {
                 progressDialog.show(this, "Loading...")
             } else {

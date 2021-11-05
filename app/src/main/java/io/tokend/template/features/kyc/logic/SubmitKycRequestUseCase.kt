@@ -11,6 +11,7 @@ import io.tokend.template.features.kyc.model.ActiveKyc
 import io.tokend.template.features.kyc.model.KycForm
 import io.tokend.template.features.kyc.model.KycRequestState
 import io.tokend.template.features.kyc.model.LocalFile
+import io.tokend.template.features.kyc.storage.KycRequestStateRepository
 import io.tokend.template.logic.TxManager
 import io.tokend.template.logic.providers.AccountProvider
 import io.tokend.template.logic.providers.ApiProvider

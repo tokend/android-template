@@ -46,7 +46,7 @@ class App : MultiDexApplication() {
 
         /**
          * Emits value when app goes to the background or comes to the foreground.
-         * [true] means that the app is currently in the background.
+         * true means that the app is currently in the background.
          */
         val backgroundStateSubject: BehaviorSubject<Boolean> = BehaviorSubject.createDefault(false)
 

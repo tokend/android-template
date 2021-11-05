@@ -18,7 +18,6 @@ import io.tokend.template.util.IntentLock
  * 'to-' will open related screen and finish current.
  */
 class Navigator private constructor() {
-    private val TAG = Navigator::class.java.name
     private var activity: Activity? = null
     private var fragment: Fragment? = null
     private var context: Context? = null

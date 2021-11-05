@@ -62,7 +62,7 @@ inline fun validateInput(inputLayout: TextInputLayout, inputView: TextInputEditT
                 .map {
                     if (hasFocus && inputLayout.isErrorEnabled) inputLayout.isErrorEnabled = false
                 } // Disable error when user typing.
-                .skipWhile({ hasFocus }) // Don't react on text change events when we have a focus.
+                .skipWhile { hasFocus } // Don't react on text change events when we have a focus.
                 .doOnEach { body() }
         }
         .subscribe { }

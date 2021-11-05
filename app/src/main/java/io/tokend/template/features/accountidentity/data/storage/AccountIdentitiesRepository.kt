@@ -18,7 +18,6 @@ class AccountIdentitiesRepository(
 ) {
     class NoIdentityAvailableException : Exception()
 
-    private val TAG = AccountIdentitiesRepository::class.java.name
     private val identities = mutableSetOf<AccountIdentityRecord>()
     private val notExistingIdentifiers = mutableSetOf<String>()
 

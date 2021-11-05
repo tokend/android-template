@@ -6,7 +6,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 
 /**
- * @return true if this number is a maximum possible amount ([Uint64.MAX_VALUE])
+ * @return true if this number is a maximum possible amount (uint64 max value)
  * considering specified [amountPrecision]
  *
  * @param amountPrecision network amount precision as a count of decimal places,
