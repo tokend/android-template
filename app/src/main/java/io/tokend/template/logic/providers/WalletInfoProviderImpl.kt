@@ -9,7 +9,10 @@ class WalletInfoProviderImpl : WalletInfoProvider {
         this.walletInfo = walletInfo
     }
 
-    override fun getWalletInfo(): WalletInfoRecord? {
+    override fun getWalletInfo(): WalletInfoRecord {
         return walletInfo
+            ?: throw NoSuchElementException("There is no wallet info set")
     }
+
+    override fun hasWalletInfo(): Boolean = walletInfo != null
 }

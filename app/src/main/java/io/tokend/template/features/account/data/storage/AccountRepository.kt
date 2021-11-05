@@ -16,10 +16,8 @@ class AccountRepository(
 ) : SingleItemRepository<AccountRecord>(itemPersistence) {
 
     override fun getItem(): Single<AccountRecord> {
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
 
         return signedApi
             .v3

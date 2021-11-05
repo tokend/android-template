@@ -153,9 +153,7 @@ class SubmitKycRequestUseCase(
 
     private fun uploadFile(type: DocumentType, local: LocalFile): Single<RemoteFile> {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
         val contentResolver = this.contentResolver
             ?: return Single.error(IllegalStateException("Content resolver is required to upload files"))
 
@@ -209,10 +207,8 @@ class SubmitKycRequestUseCase(
     }
 
     private fun getTransaction(): Single<Transaction> {
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
-        val account = accountProvider.getAccount()
-            ?: return Single.error(IllegalStateException("Cannot obtain current account"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
+        val account = accountProvider.getDefaultAccount()
 
         return Single.defer {
             val operation = CreateChangeRoleRequestOp(

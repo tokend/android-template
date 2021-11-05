@@ -27,9 +27,6 @@ class BlobsRepository(
         val api =
             if (isPrivate)
                 apiProvider.getSignedApi()
-                    ?: return Single.error(
-                        IllegalStateException("Cannot get signed API to load private blob")
-                    )
             else
                 apiProvider.getApi()
 
@@ -47,9 +44,7 @@ class BlobsRepository(
 
     fun create(blob: Blob): Single<Blob> {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
 
         return signedApi
             .blobs

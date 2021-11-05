@@ -45,9 +45,7 @@ class BalancesRepository(
 
     override fun getItems(): Single<List<BalanceRecord>> {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
 
         return if (conversionAssetCode != null)
             getConvertedBalances(
@@ -148,10 +146,8 @@ class BalancesRepository(
         txManager: TxManager,
         vararg assets: String
     ): Completable {
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Completable.error(IllegalStateException("No wallet info found"))
-        val account = accountProvider.getAccount()
-            ?: return Completable.error(IllegalStateException("Cannot obtain current account"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
+        val account = accountProvider.getDefaultAccount()
 
         return systemInfoRepository.getNetworkParams()
             .flatMap { netParams ->

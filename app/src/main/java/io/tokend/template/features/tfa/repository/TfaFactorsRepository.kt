@@ -20,9 +20,7 @@ class TfaFactorsRepository(
 
     override fun getItems(): Single<List<TfaFactorRecord>> {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
-        val walletId = walletInfoProvider.getWalletInfo()?.walletId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val walletId = walletInfoProvider.getWalletInfo().walletId
 
         return signedApi
             .tfa
@@ -41,9 +39,7 @@ class TfaFactorsRepository(
      */
     fun addFactor(type: TfaFactor.Type): Single<TfaFactorCreationResult> {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
-        val walletId = walletInfoProvider.getWalletInfo()?.walletId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val walletId = walletInfoProvider.getWalletInfo().walletId
 
         return signedApi
             .tfa
@@ -70,9 +66,7 @@ class TfaFactorsRepository(
      */
     fun setFactorAsMain(id: Long): Completable {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Completable.error(IllegalStateException("No signed API instance found"))
-        val walletId = walletInfoProvider.getWalletInfo()?.walletId
-            ?: return Completable.error(IllegalStateException("No wallet info found"))
+        val walletId = walletInfoProvider.getWalletInfo().walletId
 
         var newPriority = 0
 
@@ -80,7 +74,7 @@ class TfaFactorsRepository(
             // Obtain max priority.
             .andThen(
                 Single.just(
-                    itemsCache.items.maxBy {
+                    itemsCache.items.maxByOrNull {
                         it.priority
                     }
                         ?.priority
@@ -119,9 +113,7 @@ class TfaFactorsRepository(
      */
     fun deleteFactor(id: Long): Completable {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Completable.error(IllegalStateException("No signed API instance found"))
-        val walletId = walletInfoProvider.getWalletInfo()?.walletId
-            ?: return Completable.error(IllegalStateException("No wallet info found"))
+        val walletId = walletInfoProvider.getWalletInfo().walletId
 
         return signedApi
             .tfa

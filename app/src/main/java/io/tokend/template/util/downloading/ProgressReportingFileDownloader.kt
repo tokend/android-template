@@ -43,7 +43,7 @@ class ProgressReportingFileDownloader(
         apiProvider: ApiProvider,
         destinationContentUri: Uri,
     ): Observable<Int> =
-        (apiProvider.getSignedApi() ?: throw IllegalStateException("No signed API instance found"))
+        apiProvider.getSignedApi()
             .documents
             .getUrl(fileKey)
             .toSingle()

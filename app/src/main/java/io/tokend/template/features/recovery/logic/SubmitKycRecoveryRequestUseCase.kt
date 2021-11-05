@@ -126,10 +126,8 @@ class SubmitKycRecoveryRequestUseCase(
         }
 
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
 
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
 
         return signedApi.v3.requests
             .get(
@@ -160,10 +158,8 @@ class SubmitKycRecoveryRequestUseCase(
     }
 
     private fun getTransaction(): Single<Transaction> {
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
-        val account = accountProvider.getAccount()
-            ?: return Single.error(IllegalStateException("Cannot obtain current account"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
+        val account = accountProvider.getDefaultAccount()
 
         val operation = CreateKYCRecoveryRequestOp(
             requestID = requestId,

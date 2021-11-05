@@ -114,7 +114,6 @@ class AccountIdentitiesRepository(
         }
 
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
 
         return signedApi
             .identities

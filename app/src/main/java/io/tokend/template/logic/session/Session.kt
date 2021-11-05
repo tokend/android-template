@@ -13,7 +13,11 @@ class Session(
 ) : WalletInfoProvider by walletInfoProvider,
     AccountProvider by accountProvider {
     val login: String
-        get() = getWalletInfo()?.login ?: ""
+        get() =
+            if (hasWalletInfo())
+                getWalletInfo().login
+            else
+                ""
 
     /**
      * @returns true if session is expired and so sign out is required

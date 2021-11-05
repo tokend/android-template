@@ -59,9 +59,9 @@ class ApiProviderImpl(
         return KeyServer(getApi().wallets)
     }
 
-    override fun getSignedApi(): TokenDApi? = synchronized(this) {
-        val account = accountProvider.getAccount() ?: return null
-        val originalAccountId = walletInfoProvider.getWalletInfo()?.accountId ?: return null
+    override fun getSignedApi(): TokenDApi = synchronized(this) {
+        val account = accountProvider.getDefaultAccount()
+        val originalAccountId = walletInfoProvider.getWalletInfo().accountId
         val hash = Objects.hash(account.accountId, url)
 
         val signedApi =
@@ -83,7 +83,7 @@ class ApiProviderImpl(
         return signedApi
     }
 
-    override fun getSignedKeyServer(): KeyServer? {
-        return getSignedApi()?.let { KeyServer(it.wallets) }
+    override fun getSignedKeyServer(): KeyServer {
+        return KeyServer(getSignedApi().wallets)
     }
 }

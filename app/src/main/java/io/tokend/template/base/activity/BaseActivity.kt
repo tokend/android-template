@@ -147,7 +147,7 @@ abstract class BaseActivity : AppCompatActivity(), TfaCallback {
             }
         })
 
-        if (accountProvider.getAccount() != null || allowUnauthorized) {
+        if (walletInfoProvider.hasWalletInfo() || allowUnauthorized) {
             onCreateAllowed(savedInstanceState)
         } else {
             Log.i(

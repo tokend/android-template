@@ -35,7 +35,6 @@ class AccountKycFormsRepository(
         }
 
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
 
         return toRequest
             .chunked(15)

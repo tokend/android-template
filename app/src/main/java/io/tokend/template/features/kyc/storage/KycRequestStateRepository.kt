@@ -43,9 +43,7 @@ class KycRequestStateRepository(
 
     override fun getItem(): Single<KycRequestState> {
         val signedApi = apiProvider.getSignedApi()
-            ?: return Single.error(IllegalStateException("No signed API instance found"))
-        val accountId = walletInfoProvider.getWalletInfo()?.accountId
-            ?: return Single.error(IllegalStateException("No wallet info found"))
+        val accountId = walletInfoProvider.getWalletInfo().accountId
 
         var requestId: Long = 0
 
