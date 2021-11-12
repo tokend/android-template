@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import io.reactivex.Completable
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toSingle
+import io.tokend.template.features.account.data.model.ResolvedAccountRole
 import io.tokend.template.features.kyc.model.KycForm
 import io.tokend.template.features.kyc.model.KycRequestState
 import io.tokend.template.features.kyc.model.LocalFile
@@ -36,7 +37,7 @@ class UpdateCurrentKycRequestUseCase(
 ) {
     private data class CurrentRequestAttributes(
         val id: Long,
-        val roleToSet: Long?
+        val roleToSet: ResolvedAccountRole?
     )
 
     private lateinit var currentRequestAttributes: CurrentRequestAttributes
@@ -58,7 +59,7 @@ class UpdateCurrentKycRequestUseCase(
             .andThen(Single.defer {
                 val currentState = (repositoryProvider.kycRequestState.item
                         as? KycRequestState.Submitted<*>)
-                    ?.takeIf { it !is KycRequestState.Submitted.Approved<*> }
+                    ?.takeIf { it !is KycRequestState.Submitted.Approved<*> && it !is KycRequestState.Submitted.PermanentlyRejected<*> }
 
                 CurrentRequestAttributes(
                     id = currentState?.requestId ?: 0L,

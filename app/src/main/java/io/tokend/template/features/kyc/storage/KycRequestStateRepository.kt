@@ -1,17 +1,18 @@
 package io.tokend.template.features.kyc.storage
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toMaybe
 import io.tokend.template.data.storage.repository.SingleItemRepository
+import io.tokend.template.features.account.data.model.AccountRole
+import io.tokend.template.features.account.data.model.ResolvedAccountRole
 import io.tokend.template.features.blobs.data.storage.BlobsRepository
 import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
 import io.tokend.template.features.kyc.model.KycForm
 import io.tokend.template.features.kyc.model.KycRequestState
-import io.tokend.template.features.kyc.storage.exception.InvalidKycDataException
 import io.tokend.template.logic.providers.ApiProvider
 import io.tokend.template.logic.providers.WalletInfoProvider
-import io.tokend.template.util.Quadruple
 import org.tokend.rx.extensions.toSingle
 import org.tokend.sdk.api.TokenDApi
 import org.tokend.sdk.api.base.params.PagingOrder
@@ -30,15 +31,16 @@ class KycRequestStateRepository(
     private val apiProvider: ApiProvider,
     private val walletInfoProvider: WalletInfoProvider,
     private val blobsRepository: BlobsRepository,
-    private val keyValueEntriesRepository: KeyValueEntriesRepository
+    private val keyValueEntriesRepository: KeyValueEntriesRepository,
 ) : SingleItemRepository<KycRequestState>() {
     private class NoRequestFoundException : Exception()
 
     private data class KycRequestAttributes(
         val state: RequestState,
-        val rejectReason: String,
+        val rejectReason: String?,
+        val blockReason: String?,
         val blobId: String?,
-        val roleToSet: Long
+        val roleToSet: ResolvedAccountRole
     )
 
     override fun getItem(): Single<KycRequestState> {
@@ -47,22 +49,29 @@ class KycRequestStateRepository(
 
         var requestId: Long = 0
 
+        data class FinalComposite(
+            val state: RequestState,
+            val rejectReason: String?,
+            val blockReason: String?,
+            val kycForm: KycForm,
+            val roleToSet: ResolvedAccountRole
+        )
+
         return getLastKycRequest(signedApi, accountId)
             .switchIfEmpty(Single.error(NoRequestFoundException()))
             .doOnSuccess { request ->
                 requestId = request.id.toLong()
             }
-            .map { request ->
+            .flatMap { request ->
                 getKycRequestAttributes(request)
-                    ?: throw InvalidKycDataException()
             }
-            .flatMap { (state, rejectReason, blobId, roleToSet) ->
-                loadKycFormFromBlob(blobId, roleToSet)
+            .flatMap { (state, rejectReason, blockReason, blobId, roleToSet) ->
+                loadKycFormFromBlob(blobId, roleToSet.role)
                     .map { kycForm ->
-                        Quadruple(state, rejectReason, kycForm, roleToSet)
+                        FinalComposite(state, rejectReason, blockReason, kycForm, roleToSet)
                     }
             }
-            .map<KycRequestState> { (state, rejectReason, kycForm, roleToSet) ->
+            .map<KycRequestState> { (state, rejectReason, blockReason, kycForm, roleToSet) ->
                 when (state) {
                     RequestState.REJECTED ->
                         KycRequestState.Submitted.Rejected(
@@ -71,10 +80,32 @@ class KycRequestStateRepository(
                             roleToSet,
                             rejectReason
                         )
+                    RequestState.PERMANENTLY_REJECTED ->
+                        KycRequestState.Submitted.PermanentlyRejected(
+                            kycForm,
+                            requestId,
+                            roleToSet,
+                            rejectReason
+                        )
                     RequestState.APPROVED ->
-                        KycRequestState.Submitted.Approved(kycForm, requestId, roleToSet)
+                        if (roleToSet.role == AccountRole.BLOCKED)
+                            KycRequestState.Submitted.ApprovedToBlock(
+                                requestId,
+                                roleToSet,
+                                blockReason,
+                            )
+                        else
+                            KycRequestState.Submitted.Approved(
+                                kycForm,
+                                requestId,
+                                roleToSet
+                            )
                     else ->
-                        KycRequestState.Submitted.Pending(kycForm, requestId, roleToSet)
+                        KycRequestState.Submitted.Pending(
+                            kycForm,
+                            requestId,
+                            roleToSet
+                        )
                 }
             }
             .onErrorResumeNext { error ->
@@ -95,7 +126,6 @@ class KycRequestStateRepository(
             .getChangeRoleRequests(
                 ChangeRoleRequestPageParams(
                     requestor = accountId,
-                    destinationAccount = accountId,
                     includes = listOf(RequestParamsV3.Includes.REQUEST_DETAILS),
                     pagingParams = PagingParamsV2(
                         order = PagingOrder.DESC,
@@ -109,27 +139,40 @@ class KycRequestStateRepository(
             }
     }
 
-    private fun getKycRequestAttributes(request: ReviewableRequestResource): KycRequestAttributes? {
-        return try {
-            val state = RequestState.fromI(request.stateI)
-            val blobId = request.getTypedRequestDetails<ChangeRoleRequestResource>()
-                .creatorDetails
-                .get("blob_id")
-                ?.asText()
-            val rejectReason = request.rejectReason ?: ""
-            val roleToSet =
-                request.getTypedRequestDetails<ChangeRoleRequestResource>().accountRoleToSet
+    private fun getKycRequestAttributes(request: ReviewableRequestResource): Single<KycRequestAttributes> {
+        val roleIdToSet =
+            request.getTypedRequestDetails<ChangeRoleRequestResource>().accountRoleToSet
 
-            KycRequestAttributes(state, rejectReason, blobId, roleToSet)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+        return keyValueEntriesRepository
+            .ensureEntries(AccountRole.keyValues())
+            .map { keyValueEntriesMap ->
+                val creatorDetails = request.getTypedRequestDetails<ChangeRoleRequestResource>()
+                    .creatorDetails
+
+                KycRequestAttributes(
+                    state = RequestState.fromI(request.stateI),
+                    blobId = creatorDetails
+                        // Classics.
+                        ?.run { get("blob_id") ?: get("blobId") }
+                        ?.takeIf(JsonNode::isTextual)
+                        ?.asText()
+                        ?.takeIf(String::isNotEmpty),
+                    rejectReason = request
+                        .rejectReason
+                        ?.takeIf(String::isNotEmpty),
+                    blockReason = creatorDetails
+                        .get("blockReason")
+                        ?.takeIf(JsonNode::isTextual)
+                        ?.asText()
+                        ?.takeIf(String::isNotEmpty),
+                    roleToSet = ResolvedAccountRole(roleIdToSet, keyValueEntriesMap.values)
+                )
+            }
     }
 
     private fun loadKycFormFromBlob(
         blobId: String?,
-        roleId: Long
+        accountRole: AccountRole
     ): Single<KycForm> {
         if (blobId == null) {
             return Single.just(KycForm.Empty)
@@ -137,16 +180,9 @@ class KycRequestStateRepository(
 
         return blobsRepository
             .getById(blobId, true)
-            .flatMap { blob ->
-                keyValueEntriesRepository
-                    .updateIfNotFreshDeferred()
-                    .toSingle {
-                        blob to keyValueEntriesRepository.itemsList
-                    }
-            }
-            .map { (blob, keyValueEntries) ->
+            .map { blob ->
                 try {
-                    KycForm.fromBlob(blob, roleId, keyValueEntries)
+                    KycForm.fromBlob(blob, accountRole)
                 } catch (e: Exception) {
                     e.printStackTrace()
                     KycForm.Empty

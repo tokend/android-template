@@ -1,113 +1,146 @@
 package io.tokend.template.features.kyc.model
 
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
-import io.tokend.template.features.keyvalue.model.KeyValueEntryRecord
+import io.tokend.template.features.account.data.model.AccountRole
 import org.tokend.sdk.api.base.model.RemoteFile
 import org.tokend.sdk.api.blobs.model.Blob
-import org.tokend.sdk.api.documents.model.DocumentType
 import org.tokend.sdk.factory.GsonFactory
-import java.util.*
 
 /**
  * KYC form data with documents
  */
-abstract class KycForm(
+sealed class KycForm(
     @SerializedName("documents")
     var documents: MutableMap<String, RemoteFile>? = mutableMapOf()
 ) {
     // In order to avoid serialization it is declared as a method.
-    abstract fun getRoleKey(): String
+    abstract fun getRole(): AccountRole
 
-    open fun getDocument(type: DocumentType): RemoteFile? {
-        return documents?.get(type.name.toLowerCase(Locale.ENGLISH))
-    }
+    class Corporate(
+        documents: MutableMap<String, RemoteFile>,
+        @SerializedName("company")
+        val company: String
+    ) : KycForm(documents), KycFormWithAvatar {
+        override val avatar: RemoteFile?
+            get() = documents?.get("kyc_avatar")
 
-    open fun setDocument(type: DocumentType, file: RemoteFile?) {
-        if (file == null) {
-            documents?.remove(type.name.toLowerCase(Locale.ENGLISH))
-            return
+        override fun getRole() = ROLE
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Corporate
+
+            if (company != other.company) return false
+
+            return true
         }
 
-        documents?.put(type.name.toLowerCase(Locale.ENGLISH), file)
-    }
+        override fun hashCode(): Int {
+            return company.hashCode()
+        }
 
-    /**
-     * Implement your KYC forms here according to the example below
-     */
+
+        companion object {
+            val ROLE = AccountRole.CORPORATE
+        }
+    }
 
     class General(
         @SerializedName("first_name")
-        val firstName: String,
+        override val firstName: String,
         @SerializedName("last_name")
-        val lastName: String,
-        documents: MutableMap<String, RemoteFile>? = null
-    ) : KycForm(documents) {
-        val avatar: RemoteFile?
-            get() = documents?.get("kyc_avatar")
+        override val lastName: String
+    ) : KycForm(null), KycFormWithName, KycFormWithAvatar {
+        override val avatar: RemoteFile?
+            get() = documents?.get(AVATAR_DOCUMENT_KEY)
 
-        val fullName: String
+        override val fullName: String
             get() = "$firstName $lastName"
 
-        override fun getRoleKey(): String =
-            ROLE_KEY
+        override fun getRole() = ROLE
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as General
+
+            if (firstName != other.firstName) return false
+            if (lastName != other.lastName) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = firstName.hashCode()
+            result = 31 * result + lastName.hashCode()
+            return result
+        }
 
         companion object {
-            const val ROLE_KEY = "$ROLE_KEY_PREFIX:general"
+            const val AVATAR_DOCUMENT_KEY = "kyc_avatar"
+            val ROLE = AccountRole.GENERAL
         }
     }
 
-    /**
-     * Empty form to use in case when the original form
-     * can't be processed
-     */
     object Empty : KycForm() {
-        override fun getRoleKey(): String {
+        override fun getRole(): AccountRole {
             throw IllegalArgumentException("You can't use empty form to change role")
         }
     }
 
     companion object {
-        private const val ROLE_KEY_PREFIX = "account_role"
-
         /**
-         * Finds out KYC form type by the name of corresponding [roleId]
+         * @return KYC form parsed from [blob] corresponding to the [accountRole]
          *
          * @param blob KYC form blob
+         * @param accountRole role of the account to find out proper form type
          */
         fun fromBlob(
             blob: Blob,
-            roleId: Long,
-            keyValueEntries: Collection<KeyValueEntryRecord>
+            accountRole: AccountRole,
         ): KycForm {
-            return fromJson(blob.valueString, roleId, keyValueEntries)
+            return fromJson(blob.valueString, accountRole)
         }
 
         /**
-         * Finds out KYC form type by the name of corresponding [roleId]
+         * @return KYC form parsed from [json] corresponding to the [accountRole]
          *
          * @param json KYC form JSON
+         * @param accountRole role of the account to find out proper form type
          */
         fun fromJson(
             json: String,
-            roleId: Long,
-            keyValueEntries: Collection<KeyValueEntryRecord>
+            accountRole: AccountRole
+        ): KycForm {
+            return fromJson(
+                GsonFactory().getBaseGson()
+                    .fromJson(json, JsonElement::class.java), accountRole
+            )
+        }
+
+        /**
+         * @return KYC form parsed from [json] corresponding to the [accountRole]
+         *
+         * @param json KYC form JSON
+         * @param accountRole role of the account to find out proper form type
+         */
+        fun fromJson(
+            json: JsonElement,
+            accountRole: AccountRole
         ): KycForm {
             val gson = GsonFactory().getBaseGson()
-            val roleKey = keyValueEntries
-                .find {
-                    it.key.startsWith(ROLE_KEY_PREFIX)
-                            && it is KeyValueEntryRecord.Number
-                            && it.value == roleId
-                }
-                ?.key
-                ?: throw IllegalArgumentException("Role $roleId has no corresponding key-value entry")
 
-            return when (roleKey) {
-                General.ROLE_KEY ->
+            return when (accountRole) {
+                General.ROLE ->
                     gson.fromJson(json, General::class.java)
+                Corporate.ROLE ->
+                    gson.fromJson(json, Corporate::class.java)
                 else ->
-                    // Replace with your custom "wrong role" exception
-                    throw IllegalArgumentException("Unknown KYC form type")
+                    throw IllegalArgumentException("Don't know which KYC form to use for role $accountRole")
             }
         }
     }

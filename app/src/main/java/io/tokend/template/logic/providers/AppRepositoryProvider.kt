@@ -72,7 +72,7 @@ class AppRepositoryProvider(
             else
                 MemoryOnlyObjectPersistence<AccountRecord>()
 
-        AccountRepository(apiProvider, walletInfoProvider, persistence)
+        AccountRepository(apiProvider, walletInfoProvider, keyValueEntries, persistence)
     }
 
     override val keyValueEntries: KeyValueEntriesRepository by lazy {
@@ -89,7 +89,7 @@ class AppRepositoryProvider(
 
     override val activeKyc: ActiveKycRepository by lazy {
         val persistence = persistencePreferences?.let(::ActiveKycPersistence)
-        ActiveKycRepository(account, blobs, keyValueEntries, persistence)
+        ActiveKycRepository(account, blobs, persistence)
     }
 
     override val balances: BalancesRepository by lazy {

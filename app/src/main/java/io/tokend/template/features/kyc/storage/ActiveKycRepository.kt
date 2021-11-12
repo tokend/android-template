@@ -6,9 +6,9 @@ import io.reactivex.rxkotlin.toMaybe
 import io.tokend.template.data.storage.persistence.ObjectPersistence
 import io.tokend.template.data.storage.repository.SingleItemRepository
 import io.tokend.template.features.account.data.model.AccountRecord
+import io.tokend.template.features.account.data.model.AccountRole
 import io.tokend.template.features.account.data.storage.AccountRepository
 import io.tokend.template.features.blobs.data.storage.BlobsRepository
-import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
 import io.tokend.template.features.kyc.model.ActiveKyc
 import io.tokend.template.features.kyc.model.KycForm
 
@@ -18,7 +18,6 @@ import io.tokend.template.features.kyc.model.KycForm
 class ActiveKycRepository(
     private val accountRepository: AccountRepository,
     private val blobsRepository: BlobsRepository,
-    private val keyValueEntriesRepository: KeyValueEntriesRepository,
     persistence: ObjectPersistence<ActiveKyc>?
 ) : SingleItemRepository<ActiveKyc>(persistence) {
     val itemFormData: KycForm?
@@ -28,10 +27,7 @@ class ActiveKycRepository(
         return getAccount()
             .flatMap { account ->
                 if (account.kycBlob != null)
-                    getForm(
-                        blobId = account.kycBlob,
-                        roleId = account.roleId
-                    ).map(ActiveKyc::Form)
+                    getForm(account.kycBlob, account.role.role).map(ActiveKyc::Form)
                 else
                     Single.just(ActiveKyc.Missing)
             }
@@ -46,18 +42,11 @@ class ActiveKycRepository(
             }
     }
 
-    private fun getForm(blobId: String, roleId: Long): Single<KycForm> {
+    private fun getForm(blobId: String, accountRole: AccountRole): Single<KycForm> {
         return blobsRepository
             .getById(blobId, true)
-            .flatMap { blob ->
-                keyValueEntriesRepository
-                    .updateIfNotFreshDeferred()
-                    .toSingle {
-                        blob to keyValueEntriesRepository.itemsList
-                    }
-            }
-            .map { (blob, keyValueEntries) ->
-                KycForm.fromBlob(blob, roleId, keyValueEntries)
+            .map { blob ->
+                KycForm.fromBlob(blob, accountRole)
             }
     }
 }

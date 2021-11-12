@@ -1,13 +1,10 @@
 package io.tokend.template.features.signin.logic
 
 import io.reactivex.Completable
-import io.reactivex.Single
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.rxkotlin.toMaybe
 import io.tokend.template.features.account.data.model.AccountRecord
 import io.tokend.template.features.kyc.model.KycForm
 import io.tokend.template.features.recovery.logic.SubmitKycRecoveryRequestUseCase
-import io.tokend.template.features.signin.model.AccountType
 import io.tokend.template.logic.TxManager
 import io.tokend.template.logic.providers.AccountProvider
 import io.tokend.template.logic.providers.ApiProvider
@@ -26,7 +23,6 @@ class PostSignInManager(
     private val session: Session,
     private val errorLogger: ErrorLogger?,
     private val connectionStateProvider: (() -> Boolean)? = null,
-    private val knownAccountType: AccountType? = null
 ) {
     class AuthMismatchException : Exception()
 
@@ -103,23 +99,5 @@ class PostSignInManager(
             txManager = TxManager(apiProvider)
         )
             .perform()
-    }
-
-    /**
-     * Include this to post sign in flow if your app requires account types.
-     */
-    private fun getOrLoadAccountType(): Single<AccountType> {
-        return knownAccountType
-            .toMaybe()
-            .switchIfEmpty(
-                FindOutAccountTypeUseCase(
-                    phoneNumber = session.login,
-                    checkWalletExistence = false,
-                    repositoryProvider = repositoryProvider,
-                    apiProvider = apiProvider
-                )
-                    .perform()
-                    .map(FindOutAccountTypeUseCase.Result::type)
-            )
     }
 }

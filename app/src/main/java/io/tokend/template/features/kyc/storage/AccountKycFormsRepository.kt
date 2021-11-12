@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.reactivex.Single
 import io.reactivex.rxkotlin.toMaybe
 import io.tokend.template.extensions.mapSuccessful
+import io.tokend.template.features.account.data.model.ResolvedAccountRole
 import io.tokend.template.features.keyvalue.storage.KeyValueEntriesRepository
 import io.tokend.template.features.kyc.model.KycForm
 import io.tokend.template.logic.providers.ApiProvider
@@ -56,8 +57,7 @@ class AccountKycFormsRepository(
                 val formsByAccountId = kycResources.mapSuccessful { kycResource ->
                     kycResource.accountId to KycForm.fromJson(
                         json = objectMapper.writeValueAsString(kycResource.details),
-                        roleId = kycResource.role.toLong(),
-                        keyValueEntries = keyValueEntries
+                        accountRole = ResolvedAccountRole(kycResource.role.toLong(), keyValueEntries).role
                     )
                 }
 
