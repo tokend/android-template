@@ -27,7 +27,7 @@ interface CredentialsPersistence : CredentialsProvider {
     /**
      * Clears stored credentials
      *
-     * @param keepLogin if set then email will not be cleared
+     * @param keepLogin if set then login will not be cleared
      *
      * @see getSavedLogin
      */

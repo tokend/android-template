@@ -18,7 +18,7 @@ class TfaPasswordDialog(
     errorHandler: ErrorHandler,
     tfaVerifierInterface: TfaVerifier.Interface,
     private val tfaException: NeedTfaException,
-    private val email: String,
+    private val login: String,
     private val toastManager: ToastManager?
 ) : TfaDialog(context, errorHandler, tfaVerifierInterface) {
     override fun beforeDialogShow() {
@@ -34,7 +34,7 @@ class TfaPasswordDialog(
     }
 
     override fun getOtp(input: CharArray): String {
-        return PasswordTfaOtpGenerator().generate(tfaException, email, input)
+        return PasswordTfaOtpGenerator().generate(tfaException, login, input)
     }
 
     override fun getMessage(): String {

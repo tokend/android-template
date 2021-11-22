@@ -7,8 +7,7 @@
     <string name="error_kyc_required_to_own_asset">Only verified accounts can own this pass</string>
     <string name="error_unauthorized">The session has been expired</string>
     <string name="error_cannot_be_empty">Cannot be empty</string>
-    <string name="error_invalid_phone">Invalid phone</string>
-    <string name="error_invalid_email">Invalid email</string>
+    <string name="error_invalid_login">Invalid login</string>
     <string name="error_try_again">An error occurred. Try again later</string>
     <string name="error_connection_try_again">Connection error. Try again later</string>
     <string name="error_invalid_password">Invalid password</string>
@@ -39,10 +38,10 @@
 
     <!--TFA-->
     <string name="tfa_dialog_title">Two-factor authentication</string>
-    <string name="tfa_default_dialog_message">Enter verification code</string>
-    <string name="totp_dialog_message">Enter code from the authentication app</string>
-    <string name="email_otp_dialog_message">Verification code was sent to your email</string>
-    <string name="sms_tfa_dialog_message">Enter code from SMS</string>
+    <string name="tfa_default_dialog_message">Enter the code</string>
+    <string name="totp_dialog_message">Enter the temporary code from the authentication app</string>
+    <string name="email_otp_dialog_message">Enter the verification code from the letter</string>
+    <string name="sms_tfa_dialog_message">Enter the code from SMS</string>
     <string name="otp_verification_code">Verification code</string>
     <string name="error_invalid_otp_code">Invalid code</string>
     <string name="enter_your_password">Enter your password</string>
@@ -62,7 +61,7 @@
     <string name="password">Password</string>
     <!---->
 
-    <string name="email_verified">Email has been verified</string>
+    <string name="registration_has_been_verified">Your registration has been verified</string>
     <string name="processing_progress">Processing…</string>\
 
     <string name="hello_world">Hello World!</string>

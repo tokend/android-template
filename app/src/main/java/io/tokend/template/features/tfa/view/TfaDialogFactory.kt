@@ -21,14 +21,14 @@ class TfaDialogFactory(
     fun getForException(
         tfaException: NeedTfaException,
         verifierInterface: TfaVerifier.Interface,
-        email: String? = null
+        login: String? = null
     ): TfaDialog? {
         return when (tfaException.factorType) {
             TfaFactor.Type.PASSWORD -> {
-                if (email != null)
+                if (login != null)
                     TfaPasswordDialog(
                         context, errorHandler, verifierInterface,
-                        tfaException, email, toastManager
+                        tfaException, login, toastManager
                     )
                 else
                     null

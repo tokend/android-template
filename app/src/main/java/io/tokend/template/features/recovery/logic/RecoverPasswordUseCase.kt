@@ -15,7 +15,7 @@ import org.tokend.wallet.Account
  * Clears [credentialsPersistence] on success if it's provided
  */
 class RecoverPasswordUseCase(
-    private val email: String,
+    private val login: String,
     private val newPassword: CharArray,
     private val apiProvider: ApiProvider,
     private val credentialsPersistence: CredentialsPersistence?
@@ -43,7 +43,7 @@ class RecoverPasswordUseCase(
     private fun recoverPassword(): Single<WalletCreateResult> {
         return KeyServer(apiProvider.getApi().wallets)
             .recoverWalletPassword(
-                email,
+                login,
                 newPassword,
                 newAccounts
             )
