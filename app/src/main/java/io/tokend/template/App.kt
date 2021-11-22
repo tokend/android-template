@@ -24,7 +24,6 @@ import io.reactivex.subjects.BehaviorSubject
 import io.tokend.template.db.AppDatabase
 import io.tokend.template.di.*
 import io.tokend.template.features.urlconfig.data.model.UrlConfig
-import io.tokend.template.features.urlconfig.providers.UrlConfigProviderFactory
 import io.tokend.template.logic.BackgroundLockManager
 import io.tokend.template.logic.providers.AccountProviderFactory
 import io.tokend.template.logic.providers.WalletInfoProviderFactory
@@ -195,15 +194,16 @@ class App : MultiDexApplication() {
 
         database = getDatabase()
 
-        val defaultUrlConfig = UrlConfig(
-            BuildConfig.API_URL, BuildConfig.STORAGE_URL,
-            BuildConfig.CLIENT_URL
-        )
-        val urlConfigProvider = UrlConfigProviderFactory().createUrlConfigProvider(defaultUrlConfig)
-
         stateComponent = DaggerAppStateComponent.builder()
             .appModule(AppModule(this))
-            .urlConfigProviderModule(UrlConfigProviderModule(urlConfigProvider))
+            .urlConfigModule(
+                UrlConfigModule(
+                    defaultConfig = UrlConfig(
+                        BuildConfig.API_URL, BuildConfig.STORAGE_URL,
+                        BuildConfig.CLIENT_URL
+                    )
+                )
+            )
             .apiProviderModule(ApiProviderModule(null))
             .persistenceModule(
                 PersistenceModule(
