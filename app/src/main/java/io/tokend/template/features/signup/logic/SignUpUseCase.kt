@@ -3,8 +3,6 @@ package io.tokend.template.features.signup.logic
 import io.reactivex.Single
 import io.tokend.template.features.signin.logic.SignInUseCase
 import io.tokend.template.logic.credentials.model.WalletInfoRecord
-import io.tokend.template.logic.credentials.persistence.CredentialsPersistence
-import io.tokend.template.logic.credentials.persistence.WalletInfoPersistence
 import io.tokend.template.logic.providers.RepositoryProvider
 import io.tokend.template.logic.session.Session
 import org.tokend.rx.extensions.toSingle
@@ -26,8 +24,6 @@ class SignUpUseCase(
     private val keyServer: KeyServer,
     private val repositoryProvider: RepositoryProvider,
     private val session: Session? = null,
-    private val credentialsPersistence: CredentialsPersistence? = null,
-    private val walletInfoPersistence: WalletInfoPersistence? = null,
 ) {
     private lateinit var accounts: List<Account>
     private lateinit var signers: Collection<SignerData>
@@ -104,8 +100,8 @@ class SignUpUseCase(
                 session = session,
                 password = password,
                 accounts = accounts,
-                credentialsPersistence = credentialsPersistence,
-                walletInfoPersistence = walletInfoPersistence,
+                credentialsPersistence = null,
+                walletInfoPersistence = null,
             )
         }
     }
