@@ -18,7 +18,7 @@ import io.tokend.template.util.errorhandler.ErrorHandlerFactory
 import io.tokend.template.util.errorhandler.ErrorLogger
 import io.tokend.template.util.locale.AppLocaleManager
 import io.tokend.template.view.ToastManager
-import org.tokend.sdk.factory.JsonApiToolsProvider
+import org.tokend.sdk.factory.JsonApiTools
 import java.util.*
 import javax.inject.Named
 import javax.inject.Singleton
@@ -69,9 +69,8 @@ class UtilModule {
     }
 
     @Provides
-    @Singleton
     fun objectMapper(): ObjectMapper {
-        return JsonApiToolsProvider.getObjectMapper()
+        return JsonApiTools.objectMapper
     }
 
     @Provides

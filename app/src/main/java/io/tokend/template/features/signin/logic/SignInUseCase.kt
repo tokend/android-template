@@ -2,7 +2,6 @@ package io.tokend.template.features.signin.logic
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.rxkotlin.toSingle
 import io.reactivex.schedulers.Schedulers
 import io.tokend.template.logic.credentials.model.WalletInfoRecord
 import io.tokend.template.logic.credentials.persistence.CredentialsPersistence
@@ -15,8 +14,8 @@ import org.tokend.wallet.Account
 /**
  * Performs sign in with given credentials:
  * performs keypair loading and decryption,
- * sets up [Session], updates [CredentialsPersistence] if it is set.
- * If [CredentialsPersistence] contains saved credentials no network calls will be performed.
+ * sets up [Session], updates [CredentialsPersistence] and [WalletInfoPersistence] if any is set.
+ * If [WalletInfoPersistence] contains saved credentials no network calls will be performed.
  *
  * @see PostSignInManager
  */
@@ -30,9 +29,8 @@ class SignInUseCase(
     private val postSignInActions: (() -> Completable)?
 ) {
     private lateinit var walletInfo: WalletInfoRecord
-    private lateinit var accounts: List<Account>
 
-    private var ignoreCredentialsPersistence = false
+    private var ignoreWalletInfoPersistence = false
 
     fun perform(): Completable {
         val scheduler = Schedulers.newThread()
@@ -43,16 +41,7 @@ class SignInUseCase(
             }
             .observeOn(scheduler)
             .flatMap {
-                getAccountsFromWalletInfo()
-            }
-            .doOnSuccess { accounts ->
-                this.accounts = accounts
-            }
-            .flatMap {
                 updateProviders()
-            }
-            .doOnSuccess {
-                walletInfo.eraseSeeds()
             }
             .flatMap {
                 performPostSignIn()
@@ -62,7 +51,7 @@ class SignInUseCase(
                 // In this case it is possible that password had been changed
                 // to the same one, so we can try one more time.
                 if (error is PostSignInManager.AuthMismatchException) {
-                    ignoreCredentialsPersistence = true
+                    ignoreWalletInfoPersistence = true
                 }
             }
             .retry { attempt, error ->
@@ -73,26 +62,20 @@ class SignInUseCase(
 
     private fun getWalletInfo(login: String, password: CharArray) = Single.defer {
         val networkRequest = keyServer
-            .getWalletInfo(login, password)
+            .getWallet(login, password)
             .toSingle()
             .map(::WalletInfoRecord)
 
         walletInfoPersistence
-            ?.takeIf { !ignoreCredentialsPersistence }
+            ?.takeIf { !ignoreWalletInfoPersistence }
             ?.loadWalletInfoMaybe(login, password)
             ?.switchIfEmpty(networkRequest)
             ?: networkRequest
     }
 
-    private fun getAccountsFromWalletInfo(): Single<List<Account>> {
-        return {
-            walletInfo.getAccounts()
-        }.toSingle().subscribeOn(Schedulers.computation())
-    }
-
     private fun updateProviders(): Single<Boolean> {
         Companion.updateProviders(
-            walletInfo, accounts, password, session,
+            walletInfo, walletInfo.accounts, password, session,
             credentialsPersistence, walletInfoPersistence
         )
         return Single.just(true)
@@ -101,6 +84,11 @@ class SignInUseCase(
     private fun performPostSignIn(): Single<Boolean> {
         return postSignInActions
             ?.invoke()
+            ?.doOnError {
+                if (it is PostSignInManager.AuthMismatchException) {
+                    walletInfoPersistence?.clearWalletInfo(login)
+                }
+            }
             ?.toSingleDefault(true)
             ?: Single.just(false)
     }
@@ -112,7 +100,7 @@ class SignInUseCase(
             password: CharArray,
             session: Session,
             credentialsPersistence: CredentialsPersistence?,
-            walletInfoPersistence: WalletInfoPersistence?
+            walletInfoPersistence: WalletInfoPersistence?,
         ) {
             session.setWalletInfo(walletInfo)
             session.setAccounts(accounts)

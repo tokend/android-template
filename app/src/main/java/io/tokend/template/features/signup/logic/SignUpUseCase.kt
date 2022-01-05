@@ -12,15 +12,13 @@ import org.tokend.sdk.api.wallets.model.EmailAlreadyTakenException
 import org.tokend.sdk.api.wallets.model.InvalidCredentialsException
 import org.tokend.sdk.keyserver.KeyServer
 import org.tokend.sdk.keyserver.models.SignerData
-import org.tokend.sdk.keyserver.models.WalletCreateResult
+import org.tokend.sdk.keyserver.models.WalletCreationResult
 import org.tokend.wallet.Account
 
 /**
  * Creates wallet with given credentials and submits it
  *
- * @param repositoryProvider required to get key-values
- * @param session if specified will be set up with new wallet info and account
- * @param credentialsPersistence if specified new credentials will be saved into
+ * Sets up providers if they are set and the created wallet is verified.
  */
 class SignUpUseCase(
     private val login: String,
@@ -33,10 +31,10 @@ class SignUpUseCase(
 ) {
     private lateinit var accounts: List<Account>
     private lateinit var signers: Collection<SignerData>
-    private lateinit var walletCreateResult: WalletCreateResult
+    private lateinit var walletCreateResult: WalletCreationResult
 
-    fun perform(): Single<WalletCreateResult> {
-        return ensureEmailIsFree()
+    fun perform(): Single<WalletCreationResult> {
+        return ensureLoginIsFree()
             .flatMap {
                 generateAccounts()
             }
@@ -54,11 +52,13 @@ class SignUpUseCase(
             }
             .doOnSuccess { walletCreateResult ->
                 this.walletCreateResult = walletCreateResult
-                setUpProvidersIfPossible()
+                if (walletCreateResult.isVerified) {
+                    setUpProvidersIfPossible()
+                }
             }
     }
 
-    private fun ensureEmailIsFree(): Single<Boolean> {
+    private fun ensureLoginIsFree(): Single<Boolean> {
         return keyServer
             .getLoginParams(login)
             .toSingle()
@@ -88,7 +88,7 @@ class SignUpUseCase(
         )
     }
 
-    private fun createAndSaveWallet(): Single<WalletCreateResult> {
+    private fun createAndSaveWallet(): Single<WalletCreationResult> {
         return keyServer.createAndSaveWallet(
             email = login,
             password = password,

@@ -6,10 +6,12 @@ import io.tokend.template.data.model.RecordWithDescription
 import io.tokend.template.data.model.RecordWithLogo
 import io.tokend.template.data.model.RecordWithPolicy
 import io.tokend.template.extensions.equalsArithmetically
+import io.tokend.template.extensions.tryOrNull
 import io.tokend.template.features.urlconfig.data.model.UrlConfig
 import org.tokend.sdk.api.base.model.RemoteFile
-import org.tokend.sdk.api.generated.resources.AssetResource
+import org.tokend.sdk.api.base.model.isReallyNullOrNullAccordingToTheJavascript
 import org.tokend.sdk.api.v3.assets.model.AssetState
+import org.tokend.sdk.api.v3.model.generated.resources.AssetResource
 import java.io.Serializable
 import java.math.BigDecimal
 
@@ -86,18 +88,24 @@ class AssetRecord(
         @JvmStatic
         fun fromResource(
             source: AssetResource,
-            urlConfig: UrlConfig,
+            urlConfig: UrlConfig?,
             mapper: ObjectMapper
         ): AssetRecord {
 
             val name = source.details.get("name")?.takeIf { it !is NullNode }?.asText()
 
-            val logo = source.details.get("logo")?.takeIf { it !is NullNode }?.let {
-                mapper.convertValue(it, RemoteFile::class.java)
+            val logo = tryOrNull {
+                source.details.get("logo")
+                    ?.takeIf { it !is NullNode }
+                    ?.let { mapper.convertValue(it, RemoteFile::class.java) }
+                    ?.takeUnless(RemoteFile::isReallyNullOrNullAccordingToTheJavascript)
             }
 
-            val terms = source.details.get("terms")?.takeIf { it !is NullNode }?.let {
-                mapper.convertValue(it, RemoteFile::class.java)
+            val terms = tryOrNull {
+                source.details.get("terms")
+                    ?.takeIf { it !is NullNode }
+                    ?.let { mapper.convertValue(it, RemoteFile::class.java) }
+                    ?.takeUnless(RemoteFile::isReallyNullOrNullAccordingToTheJavascript)
             }
 
             val externalSystemType =
@@ -119,7 +127,7 @@ class AssetRecord(
                 policy = source.policies.value
                     ?: throw IllegalStateException("Asset must have a policy"),
                 name = name,
-                logoUrl = logo?.getUrl(urlConfig.storage),
+                logoUrl = urlConfig?.storage?.let { logo?.getUrl(it) },
                 terms = terms,
                 externalSystemType = externalSystemType,
                 issued = source.issued,
@@ -128,7 +136,7 @@ class AssetRecord(
                 ownerAccountId = source.owner.id,
                 trailingDigits = source.trailingDigits.toInt(),
                 description = description,
-                state = AssetState.fromValue(source.state?.value ?: AssetState.ACTIVE.value),
+                state = AssetState.fromValue(source.state.value),
                 isConnectedToCoinpayments = isConnectedToCoinpayments
             )
         }

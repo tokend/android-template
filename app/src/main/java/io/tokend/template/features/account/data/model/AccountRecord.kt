@@ -1,22 +1,80 @@
 package io.tokend.template.features.account.data.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
-import com.google.gson.annotations.SerializedName
+import io.tokend.template.features.assets.model.AssetRecord
 import io.tokend.template.features.keyvalue.model.KeyValueEntryRecord
-import org.tokend.sdk.api.generated.resources.AccountResource
+import org.tokend.sdk.api.v3.model.generated.inner.ExternalSystemData
+import org.tokend.sdk.api.v3.model.generated.resources.AccountResource
+import org.tokend.sdk.api.v3.model.generated.resources.ExternalSystemIDResource
+import org.tokend.sdk.factory.JsonApiTools
+import org.tokend.wallet.xdr.ExternalSystemAccountIDPoolEntry
 import java.io.Serializable
 import java.util.*
 
 class AccountRecord(
-    @SerializedName("id")
+    @JsonProperty("id")
     val id: String,
-    @SerializedName("role")
+    @JsonProperty("role")
     var role: ResolvedAccountRole,
-    @SerializedName("kyc_recovery_status")
+    @JsonProperty("kyc_recovery_status")
     var kycRecoveryStatus: KycRecoveryStatus,
-    @SerializedName("kyc_blob_id")
+    @JsonProperty("kyc_blob_id")
     val kycBlob: String?,
+    @JsonProperty("deposit_accounts")
+    val depositAccounts: MutableSet<DepositAccount>
 ) : Serializable {
+
+    class DepositAccount(
+        @JsonProperty("type")
+        val type: Int,
+        @JsonProperty("address")
+        val address: String,
+        @JsonProperty("payload")
+        val payload: String?,
+        @JsonProperty("expiration_date")
+        val expirationDate: Date?
+    ) : Serializable {
+        constructor(source: ExternalSystemIDResource) : this(
+            type = source.externalSystemType,
+            expirationDate = source.expiresAt,
+            data = source.data
+        )
+
+        constructor(source: ExternalSystemAccountIDPoolEntry) : this(
+            type = source.externalSystemType,
+            expirationDate = Date(source.expiresAt * 1000L),
+            data = JsonApiTools.objectMapper.readValue(
+                source.data,
+                ExternalSystemData::class.java
+            )
+        )
+
+        constructor(type: Int, expirationDate: Date?, data: ExternalSystemData) : this(
+            type = type,
+            expirationDate = expirationDate,
+            address = data.data.address,
+            payload = data.data.payload
+        )
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as DepositAccount
+
+            if (type != other.type) return false
+            if (address != other.address) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = type
+            result = 31 * result + address.hashCode()
+            return result
+        }
+    }
 
     /**
      * @param keyValueEntries role-related key-value entries to resolve [AccountRole]
@@ -41,6 +99,8 @@ class AccountRecord(
             ?.takeIf(JsonNode::isTextual)
             ?.asText()
             ?.takeIf(String::isNotEmpty),
+        depositAccounts = source.externalSystemIds?.map(::DepositAccount)?.toHashSet()
+            ?: mutableSetOf()
     )
 
     enum class KycRecoveryStatus {
@@ -49,5 +109,18 @@ class AccountRecord(
         PENDING,
         REJECTED,
         PERMANENTLY_REJECTED;
+    }
+
+    fun getDepositAccount(asset: AssetRecord): DepositAccount? {
+        val type =
+            if (asset.isConnectedToCoinpayments)
+                asset.code.hashCode()
+            else
+                asset.externalSystemType
+
+        type ?: return null
+
+        return depositAccounts
+            .find { it.type == type }
     }
 }

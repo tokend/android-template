@@ -4,9 +4,9 @@ import android.content.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import io.tokend.template.logic.credentials.persistence.CredentialsPersistence
-import io.tokend.template.logic.credentials.persistence.CredentialsPersistenceOnPreferences
+import io.tokend.template.logic.credentials.persistence.CredentialsPersistenceImpl
 import io.tokend.template.logic.credentials.persistence.WalletInfoPersistence
-import io.tokend.template.logic.credentials.persistence.WalletInfoPersistenceOnPreferences
+import io.tokend.template.logic.credentials.persistence.WalletInfoPersistenceImpl
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -18,13 +18,13 @@ class PersistenceModule(
     @Provides
     @Singleton
     fun credentialsPersistence(): CredentialsPersistence {
-        return CredentialsPersistenceOnPreferences(persistencePreferences)
+        return CredentialsPersistenceImpl(persistencePreferences)
     }
 
     @Provides
     @Singleton
     fun walletInfoPersistence(): WalletInfoPersistence {
-        return WalletInfoPersistenceOnPreferences(persistencePreferences)
+        return WalletInfoPersistenceImpl(persistencePreferences)
     }
 
     @Provides

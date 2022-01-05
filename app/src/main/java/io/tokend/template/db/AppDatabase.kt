@@ -5,7 +5,6 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
-import com.google.gson.Gson
 import org.tokend.sdk.utils.BigDecimalUtil
 import java.math.BigDecimal
 import java.util.*
@@ -20,8 +19,6 @@ import java.util.*
 @TypeConverters(AppDatabase.Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     class Converters {
-        private val gsonWithoutNulls = Gson()
-
         @TypeConverter
         fun dateToUnix(value: Date?): Long? {
             return value?.let { it.time / 1000 }

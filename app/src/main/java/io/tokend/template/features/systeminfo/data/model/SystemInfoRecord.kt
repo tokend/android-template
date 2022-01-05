@@ -1,20 +1,21 @@
 package io.tokend.template.features.systeminfo.data.model
 
-import com.google.gson.annotations.SerializedName
-import org.tokend.sdk.api.generated.resources.HorizonStateResource
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.tokend.sdk.api.v3.model.generated.resources.HorizonStateResource
 import org.tokend.wallet.NetworkParams
 import java.util.*
 import kotlin.math.log10
 
 class SystemInfoRecord(
-    @SerializedName("passphrase")
+    @JsonProperty("passphrase")
     val passphrase: String,
-    @SerializedName("precision_multiplier")
+    @JsonProperty("precision_multiplier")
     val precisionMultiplier: Long,
-    @SerializedName("time_offset_seconds")
+    @JsonProperty("time_offset_seconds")
     val timeOffsetSeconds: Long,
-    @SerializedName("latest_block")
-    val latestBlock: Long
+    @JsonProperty("latest_block")
+    val latestBlock: Long,
 ) {
     /**
      * @param source fresh [HorizonStateResource], if it's outdated then
@@ -27,6 +28,7 @@ class SystemInfoRecord(
         latestBlock = source.core.latest
     )
 
+    @get:JsonIgnore
     val precision: Int
         get() = log10(precisionMultiplier.toDouble()).toInt()
 

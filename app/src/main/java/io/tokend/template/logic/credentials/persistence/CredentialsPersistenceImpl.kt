@@ -9,7 +9,7 @@ import org.tokend.wallet.utils.toCharArray
 /**
  * Represents secure credentials storage based on SharedPreferences.
  */
-class CredentialsPersistenceOnPreferences(
+class CredentialsPersistenceImpl(
     private val preferences: SharedPreferences
 ) : CredentialsPersistence {
     private val secureStorage = SecureStorage(preferences)
@@ -63,6 +63,6 @@ class CredentialsPersistenceOnPreferences(
 
     companion object {
         const val PASSWORD_KEY = "(¬_¬)"
-        private const val LOGIN_KEY = "login"
+        private const val LOGIN_KEY = "email"
     }
 }

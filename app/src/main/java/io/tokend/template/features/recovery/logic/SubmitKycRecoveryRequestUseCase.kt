@@ -18,7 +18,7 @@ import org.tokend.sdk.api.base.params.PagingParamsV2
 import org.tokend.sdk.api.blobs.model.Blob
 import org.tokend.sdk.api.blobs.model.BlobType
 import org.tokend.sdk.api.v3.requests.params.RequestsPageParamsV3
-import org.tokend.sdk.factory.GsonFactory
+import org.tokend.sdk.factory.JsonApiTools
 import org.tokend.sdk.keyserver.models.SignerData
 import org.tokend.wallet.Account
 import org.tokend.wallet.NetworkParams
@@ -105,7 +105,7 @@ class SubmitKycRecoveryRequestUseCase(
             return "".toSingle()
         }
 
-        val formJson = GsonFactory().getBaseGson().toJson(form)
+        val formJson = JsonApiTools.objectMapper.writeValueAsString(form)
 
         return repositoryProvider
             .blobs
